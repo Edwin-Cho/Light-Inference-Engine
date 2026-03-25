@@ -365,12 +365,151 @@ FAISS search (top_k)
 
 ---
 
+---
+
+## 2026-03-25 저녁 세션 (20:00 — 21:30 KST)
+
+**작업자:** Edwin Cho
+**주요 목표:** Phase 2 — React Web UI 구현 + 프롬프트 품질 개선 + 마무리 정리
+
+---
+
+### Phase 2 — Web UI (SRS v2.0.0 전체 구현)
+
+#### 기술 스택
+
+| 구성 요소 | 선택 | 이유 |
+| --- | --- | --- |
+| 프레임워크 | React 18 + Vite | 빠른 HMR, TypeScript 지원 |
+| 스타일링 | Tailwind CSS v4 | 유틸리티 클래스 기반, 다크 테마 용이 |
+| 아이콘 | Lucide React | 경량 SVG 아이콘 셋 |
+| HTTP 클라이언트 | Axios | Interceptor 기반 Bearer token 자동 주입 |
+| 라우팅 | React Router v6 | 중첩 라우트 + 인증 가드 |
+| 수식 렌더링 | KaTeX | LaTeX 수식 클라이언트 사이드 렌더링 |
+
+#### 구현된 페이지
+
+| 페이지 | 경로 | 주요 기능 |
+| --- | --- | --- |
+| `LoginPage` | `/login` | JWT 발급, 로그인 에러 처리, 글로우 애니메이션 배경 |
+| `QueryPage` | `/` | 채팅형 UI, KaTeX 수식 렌더링, 글래스모피즘 citation 카드, score bar |
+| `DocumentsPage` | `/documents` | PDF/TXT 업로드 + 문서 삭제 |
+| `AdminPage` | `/admin` | 전체 인덱스 rebuild 트리거 |
+
+#### 컴포넌트 구조
+
+```text
+frontend/src/
+├── App.tsx                  # React Router + AuthProvider 래핑
+├── index.css                # Tailwind v4 import + CSS 변수
+├── main.tsx                 # React 앱 진입점
+├── components/
+│   ├── Layout.tsx           # 사이드바 + health badge + role guard 네비
+│   └── MathRenderer.tsx     # KaTeX 수식 파서 + 렌더러
+├── contexts/
+│   └── AuthContext.tsx      # JWT 상태 관리 + role 디코딩
+├── lib/
+│   ├── api.ts               # Axios 인스턴스 + API 함수
+│   └── types.ts             # QueryResponse, Citation 등 타입 정의
+└── pages/
+    ├── LoginPage.tsx
+    ├── QueryPage.tsx
+    ├── DocumentsPage.tsx
+    └── AdminPage.tsx
+```
+
+#### UI 디자인 특징
+
+- 전체 다크 테마 (`#0a0a0f` 배경)
+- 사이드바 글래스모피즘 (`rgba(255,255,255,0.025)`)
+- 로그인 페이지: 퍼플 그라디언트 글로우 orb 애니메이션
+- Citation 카드: 반투명 배경 + 스코어 퍼센트 bar
+- 사이드바 Health badge: 30초 폴링, Online(녹색) / Offline(빨강) 실시간 표시
+
+---
+
+### 프롬프트 엔지니어링 개선
+
+#### 문제 1 — 수치 부정확 ("various pre-training tasks")
+
+**해결 (`generator.py` SYSTEM_PROMPT):**
+- 정확한 수치 사용 강제 규칙 추가
+- 금지어 리스트 (`various`, `several`, `multiple`, `some`) 명시
+- "특정 수치가 없으면 생략" 지시
+
+#### 문제 2 — 인라인 citation 미삽입
+
+**해결 (`generator.py` user_message):**
+- 실제 쿼리 메시지 앞에 few-shot Q/A 예시 삽입
+- 예시 형식: `[Source: BERT.pdf | Section: 3.1 Pre-training Tasks | p.4]`
+- 모델이 패턴을 모방해 인라인 citation 생성하도록 유도
+
+**결과:**
+- 1차: `"various pre-training tasks"` ❌ → citation 없음 ❌
+- 2차: `"two main tasks"` ✅ → citation 없음 ❌
+- 3차: `"two pre-training tasks"` ✅ → `[Source: BERT.pdf | Section: 2.3 | p.3]` ✅
+
+---
+
+### JWT Role Guard
+
+**구현:**
+- `AuthContext.tsx`: `decodeRole()` — JWT payload `atob()` 디코딩 → `role` 필드 추출
+- 역할 계층: `researcher(1) < lab_pi(2) < admin(3)`
+- `Layout.tsx`: `hasAccess(role, minRole)` 필터로 nav 아이템 조건부 렌더링
+
+| 역할 | 표시되는 탭 |
+| --- | --- |
+| `researcher` | Query |
+| `lab_pi` | Query, Documents |
+| `admin` | Query, Documents, Admin |
+
+---
+
+### KaTeX 수식 렌더링
+
+**구현 (`MathRenderer.tsx`):**
+
+- 지원 패턴: `$...$` (인라인), `$$...$$` (블록), `\(...\)`, `\[...\]`
+- 정규식 파싱 → Segment 배열 분리 → KaTeX `renderToString()` 적용
+- 렌더 실패 시 `[LaTeX Error]` fallback (빨간 텍스트)
+- `QueryPage.tsx` 답변 버블에 적용
+
+---
+
+### 디렉토리 정리 + README 최신화
+
+**삭제된 파일 (Vite 템플릿 잔재):**
+
+| 경로 | 이유 |
+| --- | --- |
+| `frontend/src/App.css` | 미사용 스타일 |
+| `frontend/src/assets/` | 템플릿 SVG/PNG (react.svg, vite.svg, hero.png) |
+| `frontend/public/icons.svg` | 미사용 |
+
+**README.md 업데이트:**
+- Project Structure에 `frontend/` 디렉토리 추가
+- Quick Start에 Web UI 실행 명령어 추가 (영문 + 한국어 섹션 모두)
+
+---
+
+### Git 커밋 이력
+
+| 커밋 해시 | 메시지 |
+| --- | --- |
+| `16dd31f` | `feat: Phase 2 Web UI + prompt precision upgrade` |
+| `f186e9f` | `docs: add frontend start command to Korean quick start` |
+| `41a2b83` | `feat: KaTeX math rendering + JWT role guard` |
+
+---
+
 ## 미완료 / 다음 세션 후보
 
 | ID | 내용 | 우선순위 |
 | --- | --- | --- |
-| — | `paper_title` 자동 정제 (PDF 메타데이터 기반) | 🟢 낮음 |
-| — | Git 커밋 및 버전 태깅 | 🟢 낮음 |
+| — | 모바일 반응형 레이아웃 (SRS v2.1.0) | 🟡 중간 |
+| — | 다크/라이트 모드 토글 (SRS v2.1.0) | 🟢 낮음 |
+| — | Document list 페이지 분리 (현재 Upload 탭에 통합) | 🟢 낮음 |
 
 ---
 
