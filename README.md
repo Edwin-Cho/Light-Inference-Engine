@@ -247,7 +247,11 @@ pip install -r requirements.txt
 # 서버 실행
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-# 토큰 발급
+# Web UI 실행 (선택)
+cd frontend && npm install && npm run dev
+# http://localhost:5173 접속  (로그인: admin / admin1234)
+
+# 토큰 발급 (CLI 방식)
 TOKEN=$(curl -s -X POST http://localhost:8000/auth/token \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "admin1234"}' \
