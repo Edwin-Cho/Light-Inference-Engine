@@ -1,0 +1,38 @@
+# Deep Learning Framework
+torch>=2.1.0
+
+# HuggingFace Ecosystem
+transformers>=4.40.0
+accelerate>=0.25.0
+
+# Quantization (CUDA 환경 전용; MPS에서는 float16 fallback 사용)
+bitsandbytes>=0.43.0
+
+# Embedding Model
+sentence-transformers>=2.7.0
+
+# Vector Store
+faiss-cpu>=1.7.4
+
+# Document Parsing
+pymupdf>=1.23.0
+
+# Chunking
+langchain-text-splitters>=0.0.1
+
+# FastAPI Backend
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9
+
+# Authentication
+python-jose[cryptography]>=3.3.0
+
+# Data Validation
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Utilities
+tqdm>=4.66.0
+numpy>=1.24.0
+python-dotenv>=1.0.0
