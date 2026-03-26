@@ -1,8 +1,20 @@
 # How to Run — OnDevice Scholar RAG
 
-**Version:** 1.2.0  
-**Target Platform:** macOS (Apple Silicon M-series, MPS)  
+**Version:** 1.3.0  
+**Target Platform:** macOS (Apple Silicon MPS) · Windows (CPU / NVIDIA CUDA)  
 [한국어 버전은 하단을 참조하세요.](#한국어-버전)
+
+---
+
+## Platform Support
+
+| Platform | Acceleration | 4-bit Quantization |
+| :--- | :--- | :--- |
+| macOS Apple Silicon | MPS (float16) | ❌ Not needed |
+| Windows · Linux NVIDIA GPU | CUDA (float16/int4) | ✅ Optional (`bitsandbytes`) |
+| Windows · Linux CPU | CPU (float32) | ❌ Not applicable |
+
+> The server auto-detects the device: **CUDA → MPS → CPU** fallback chain.
 
 ---
 
@@ -11,8 +23,8 @@
 | Item | Minimum |
 | :--- | :--- |
 | Python | 3.11+ |
-| macOS | Ventura 13.0+ |
-| Unified Memory | 8 GB recommended |
+| OS | macOS Ventura 13.0+ · Windows 10/11 · Ubuntu 20.04+ |
+| RAM / Unified Memory | 8 GB recommended |
 | Free Disk Space | 10 GB+ (including model weights) |
 
 ---
@@ -23,8 +35,14 @@
 pip install -r requirements.txt
 ```
 
-> ⚠️ `bitsandbytes` 4-bit quantization is unstable on Apple Silicon MPS.  
-> `generator.py` automatically applies `float16` fallback on MPS.
+**NVIDIA GPU (Windows / Linux) — optional 4-bit quantization:**
+
+```bash
+pip install bitsandbytes>=0.43.0
+```
+
+> `bitsandbytes` is **not** in `requirements.txt` by default.  
+> macOS MPS and CPU environments do **not** need it — `float16` / `float32` fallback is automatic.
 
 ---
 
@@ -81,11 +99,22 @@ Interactive API docs (dev mode): `http://localhost:8000/docs`
 
 ## Step 5 — Get a Token
 
+**macOS / Linux (bash):**
+
 ```bash
 TOKEN=$(curl -s -X POST http://localhost:8000/auth/token \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "your-admin-password"}' \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+```
+
+**Windows (PowerShell):**
+
+```powershell
+$body = '{"username": "admin", "password": "your-admin-password"}'
+$resp = Invoke-RestMethod -Uri http://localhost:8000/auth/token `
+  -Method POST -ContentType "application/json" -Body $body
+$TOKEN = $resp.access_token
 ```
 
 Raw response:
@@ -178,15 +207,25 @@ When no relevant documents found:
 ### Delete a document
 
 ```bash
+# macOS / Linux
 curl -X DELETE http://localhost:8000/document/<document_id> \
   -H "Authorization: Bearer $TOKEN"
+
+# Windows PowerShell
+Invoke-RestMethod -Uri http://localhost:8000/document/<document_id> `
+  -Method DELETE -Headers @{Authorization="Bearer $TOKEN"}
 ```
 
 ### Rebuild the full index
 
 ```bash
+# macOS / Linux
 curl -X POST http://localhost:8000/admin/rebuild-index \
   -H "Authorization: Bearer $TOKEN"
+
+# Windows PowerShell
+Invoke-RestMethod -Uri http://localhost:8000/admin/rebuild-index `
+  -Method POST -Headers @{Authorization="Bearer $TOKEN"}
 ```
 
 ### Health check
@@ -213,11 +252,13 @@ curl http://localhost:8000/health
 | Symptom | Cause | Fix |
 | :--- | :--- | :--- |
 | Model load failure | Out of memory | Close other apps and retry. Minimum 8 GB free required |
+| `bitsandbytes` install error on Windows | No NVIDIA GPU / CPU-only | Skip install — CPU float32 fallback is automatic |
 | `bitsandbytes` error | MPS incompatibility | float16 fallback applied automatically. Check logs |
 | FAISS index load failure | Corrupted index file | Call `POST /admin/rebuild-index` |
 | `section_header: null` returned | Font/bold detection failure | Standard arXiv PDFs are auto-detected after `rebuild-index` |
 | `status: partial` returned | Missing metadata or one-sided retrieval | Check content of `warnings` field |
 | PDF parse failure | Encrypted or corrupted PDF | Check `detail` field in error response |
+| PowerShell `ExecutionPolicy` error | Script execution blocked | Run: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
 
 ---
 
@@ -228,8 +269,8 @@ curl http://localhost:8000/health
 | 항목 | 최소 버전 |
 | :--- | :--- |
 | Python | 3.11+ |
-| macOS | Ventura 13.0+ |
-| 통합 메모리 | 8GB 이상 권장 |
+| OS | macOS Ventura 13.0+ · Windows 10/11 · Ubuntu 20.04+ |
+| 메모리 | 8GB 이상 권장 |
 | 디스크 여유 공간 | 10GB 이상 (모델 가중치 포함) |
 
 ### 실행 순서
@@ -237,6 +278,9 @@ curl http://localhost:8000/health
 ```bash
 # 1. 의존성 설치
 pip install -r requirements.txt
+# NVIDIA GPU 환경 (Windows/Linux)에서 4-bit 양자화를 원하면:
+# pip install bitsandbytes>=0.43.0
+# macOS MPS, CPU 환경에서는 불필요 (자동 fallback)
 
 # 2. 모델 가중치 사전 다운로드 (최초 1회)
 python3 -c "

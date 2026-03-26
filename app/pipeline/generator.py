@@ -22,7 +22,7 @@ _FALLBACK_SUBSTRINGS = (
     "not found in the provided",
 )
 
-SYSTEM_PROMPT = """You are a precise academic research assistant. Answer ONLY using the provided context passages.
+SYSTEM_PROMPT = r"""You are a precise academic research assistant. Answer ONLY using the provided context passages.
 
 Rules:
 1. Every factual claim MUST be followed immediately by an inline citation: [Source: filename | Section: X | p.N].

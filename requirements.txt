@@ -5,8 +5,11 @@ torch>=2.1.0
 transformers>=4.40.0
 accelerate>=0.25.0
 
-# Quantization (CUDA 환경 전용; MPS에서는 float16 fallback 사용)
-bitsandbytes>=0.43.0
+# Quantization — OPTIONAL
+# - CUDA (Windows/Linux NVIDIA GPU): pip install bitsandbytes>=0.43.0
+# - Apple Silicon MPS: 불필요 (float16 자동 fallback)
+# - CPU 환경: 불필요 (float32 자동 fallback)
+# bitsandbytes>=0.43.0
 
 # Embedding Model
 sentence-transformers>=2.7.0
