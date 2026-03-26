@@ -503,14 +503,84 @@ frontend/src/
 
 ---
 
+---
+
+## 2026-03-26 (Wed)
+
+**작업자:** Edwin Cho
+**작업 시간:** 19:45 — 21:20 KST
+**주요 목표:** 시스템 실동작 테스트 + KaTeX 수식 포맷 버그 수정 + UI 디자인 리뷰
+
+---
+
+### 실동작 테스트 쿼리
+
+서버 재기동 후 프론트엔드(`http://localhost:5173`)에서 직접 쿼리 테스트 진행.
+
+| 쿼리 | 결과 | 판정 |
+| --- | --- | --- |
+| `Performance benchmarks for academic RAG systems` | "No relevant information found" | ✅ 정상 폴백 (해당 논문 없음) |
+| `What are the main components of a Transformer architecture?` | 정확한 답변 + `[Source: Attention_Is_All_You_Need.pdf \| Section: 3.1 \| p.3]` | ✅ |
+| `What is the computational complexity of self-attention compared to recurrent layers?` | `O(n^2)` (LaTeX 미적용) | ⚠️ → 수정 |
+
+---
+
+### 수식 포맷 버그 수정
+
+**문제:** LLM이 수학 표현을 `O(n^2)` plain text로 출력 → KaTeX 인식 불가
+
+**해결 (`generator.py` SYSTEM_PROMPT Rule 8 추가):**
+
+```python
+8. MATH — Wrap all mathematical expressions in LaTeX delimiters:
+   - Inline: $O(n^2)$, $d_{\text{model}}$, $\sqrt{d_k}$
+   - Block: $$\text{Attention}(Q,K,V) = \text{softmax}(QK^T/\sqrt{d_k})V$$
+   - Never write bare: O(n^2), d_model
+```
+
+**결과:** `$O(n^2)$` 출력 → KaTeX 정상 렌더링 ✅
+
+**커밋:** `8ebd004` — `feat: enforce LaTeX math delimiters in SYSTEM_PROMPT for KaTeX rendering`
+
+---
+
+### UI 디자인 리뷰 문서 작성
+
+전체 프론트엔드 코드 분석 후 `LiE_Design.md` 작성:
+
+- 페이지별 현행 구조 + CSS 특징 정리
+- 아쉬운 점 항목화 (11개 개선 사항)
+- 우선순위별 분류 (🔴 High / 🟡 Medium / 🟢 Low)
+- 구현 난이도 × 효과 매트릭스
+
+**주요 개선 후보:**
+
+| 우선순위 | 항목 |
+| --- | --- |
+| 🔴 | Top-K 위치 이동 (헤더 → 입력창 옆) |
+| 🔴 | Documents 페이지 — 인덱싱된 문서 목록 조회 |
+| 🔴 | QueryPage Empty state — 예시 쿼리 칩 |
+| 🟡 | Citation 카드 접기/펼치기 토글 |
+| 🟡 | 사이드바 — 로그인 사용자 정보 표시 |
+| 🟡 | 답변 복사 버튼 + Clear conversation 버튼 |
+| 🟢 | `w-58` → `w-60` 수정, auto-resize textarea |
+
+---
+
 ## 미완료 / 다음 세션 후보
 
 | ID | 내용 | 우선순위 |
 | --- | --- | --- |
-| — | 모바일 반응형 레이아웃 (SRS v2.1.0) | 🟡 중간 |
+| UI-① | QueryPage Top-K 입력창 옆으로 이동 | 🔴 높음 |
+| UI-② | DocumentsPage 인덱싱 문서 목록 조회 | 🔴 높음 |
+| UI-③ | QueryPage Empty state 예시 쿼리 칩 | 🔴 높음 |
+| UI-④ | Citation 카드 접기/펼치기 | 🟡 중간 |
+| UI-⑤ | 사이드바 사용자 정보 (username + role badge) | 🟡 중간 |
+| UI-⑥ | 답변 복사 버튼 + Clear 버튼 | 🟡 중간 |
+| UI-⑦ | `w-58` → `w-60`, auto-resize textarea | 🟢 낮음 |
+| — | 모바일 반응형 레이아웃 (SRS v2.1.0) | � 낮음 |
 | — | 다크/라이트 모드 토글 (SRS v2.1.0) | 🟢 낮음 |
-| — | Document list 페이지 분리 (현재 Upload 탭에 통합) | 🟢 낮음 |
 
 ---
 
-*작성일: 2026-03-24 ~ 03-25 / 작성자: Edwin Cho*
+*작성일: 2026-03-24 ~ 03-26 / 작성자: Edwin Cho*
