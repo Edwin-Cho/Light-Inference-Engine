@@ -129,6 +129,7 @@ _NOISE_PATTERNS = [
     re.compile(r',\s*\d{4}[\.)\]]'),     # bibliography year: ", 2023."
     re.compile(r'^\d+\.\d{2,}'),         # 2+ decimal places: score "9.56 RTN", "12.46 GPTQ"
     re.compile(r'^0\.\d'),               # 0.X ratio/probability: "0.7 Mean..."
+    re.compile(r'^\d{3,}\s'),            # 3+ digit leading integer: table row "199 ResNet101x1"
     re.compile(r'\(vector-wise|\(row-wise|\(column-wise', re.IGNORECASE),  # quant table
     re.compile(                          # Figure/Table/Algorithm caption: "Figure 1:", "Table 2."
         r'^(Figure|Fig\.?|Table|Tab\.?|Algorithm|Alg\.?|Listing)\s+\d+',

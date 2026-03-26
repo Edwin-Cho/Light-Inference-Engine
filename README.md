@@ -175,6 +175,11 @@ When only one side is retrieved in a comparison query:
 | **RBAC** | Role-based access control: Researcher / Lab PI / Admin |
 | **MPS Optimized** | Prioritized optimization for Apple Silicon M-series |
 | **Incremental Indexing** | Add new documents without full index rebuild |
+| **Metric Label Fidelity (P12)** | Post-generation check: label–value mismatch against retrieved chunks → `partial` warning |
+| **Numeric Existence Check (P13)** | Post-generation check: percentage values absent from retrieved context → hallucination warning |
+| **Noise Section Header Filter** | `_is_noise_header` applied at query time to both context block and citations — no re-indexing required |
+| **Single-source Badge** | UI amber badge when answer cites only 1 document: "1 source — verify independently" |
+| **Hallucination Defense Prompt** | SYSTEM_PROMPT Rules 9–11: verbatim metric names, time-bounded SOTA claims, no fabricated numerics |
 
 ---
 

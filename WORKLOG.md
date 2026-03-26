@@ -4,7 +4,7 @@
 
 ## 2026-03-24 (Mon)
 
-**작업자:** Edwin Cho
+**작업자:** Edwin R. Cho
 **전체 작업 시간:** 11:00 — 22:30 KST
 **주요 목표:** On-Device RAG 파이프라인 설계·구현·정제·문서화 전 과정
 
@@ -285,7 +285,7 @@ BERT.pdf | 1810.04805   ← PDF 내부 텍스트에서 자동 추출 ✅
 
 ## 2026-03-25 (Tue)
 
-**작업자:** Edwin Cho
+**작업자:** Edwin R. Cho
 **작업 시간:** 12:00 — 12:35 KST
 **주요 목표:** P9 / P10 / P11 완료
 
@@ -369,7 +369,7 @@ FAISS search (top_k)
 
 ## 2026-03-25 저녁 세션 (20:00 — 21:30 KST)
 
-**작업자:** Edwin Cho
+**작업자:** Edwin R. Cho
 **주요 목표:** Phase 2 — React Web UI 구현 + 프롬프트 품질 개선 + 마무리 정리
 
 ---
@@ -433,6 +433,7 @@ frontend/src/
 #### 문제 1 — 수치 부정확 ("various pre-training tasks")
 
 **해결 (`generator.py` SYSTEM_PROMPT):**
+
 - 정확한 수치 사용 강제 규칙 추가
 - 금지어 리스트 (`various`, `several`, `multiple`, `some`) 명시
 - "특정 수치가 없으면 생략" 지시
@@ -440,11 +441,13 @@ frontend/src/
 #### 문제 2 — 인라인 citation 미삽입
 
 **해결 (`generator.py` user_message):**
+
 - 실제 쿼리 메시지 앞에 few-shot Q/A 예시 삽입
 - 예시 형식: `[Source: BERT.pdf | Section: 3.1 Pre-training Tasks | p.4]`
 - 모델이 패턴을 모방해 인라인 citation 생성하도록 유도
 
 **결과:**
+
 - 1차: `"various pre-training tasks"` ❌ → citation 없음 ❌
 - 2차: `"two main tasks"` ✅ → citation 없음 ❌
 - 3차: `"two pre-training tasks"` ✅ → `[Source: BERT.pdf | Section: 2.3 | p.3]` ✅
@@ -507,7 +510,7 @@ frontend/src/
 
 ## 2026-03-26 (Wed)
 
-**작업자:** Edwin Cho
+**작업자:** Edwin R. Cho
 **작업 시간:** 19:45 — 21:20 KST
 **주요 목표:** 시스템 실동작 테스트 + KaTeX 수식 포맷 버그 수정 + UI 디자인 리뷰
 
@@ -583,4 +586,164 @@ frontend/src/
 
 ---
 
-*작성일: 2026-03-24 ~ 03-26 / 작성자: Edwin Cho*
+## 2026-03-26 야간 세션 (22:00 — 23:30 KST)
+
+**작업자:** Edwin R. Cho
+**주요 목표:** UI 상태 피드백 / UX 개선 + 할루시네이션 다층 방어 구현
+
+---
+
+### UI-① — LiELogo 컴포넌트 + 디자인 리파인
+
+**구현 (`frontend/src/components/LiELogo.tsx`):**
+
+- 테마 반응형 SVG 로고 컴포넌트 (`showTagline` prop)
+- `LoginPage`: BookOpen 아이콘 박스 → LiELogo + 태그라인 교체
+- 라이트/다크 팔레트 세부 조정 (중립 슬레이트 계열)
+- 다크 모드 텍스트: `slate-100` → `slate-200` (눈부심 완화)
+- 채팅 답변 폰트 크기 `text-sm` → `text-[0.9rem]`
+- 브라우저 탭 제목: `"frontend"` → `"LiE — Light Inference Engine"`
+
+---
+
+### UI-② — QueryPage UX 개선
+
+**구현 (`QueryPage.tsx`):**
+
+| 기능 | 설명 |
+| --- | --- |
+| textarea auto-resize | 1~5줄 자동 높이 조정, 입력에 따라 실시간 반영 |
+| auto-focus | 페이지 진입 시 입력창 자동 포커스 |
+| `Esc` 클리어 | 입력 중 Esc 키로 textarea 내용 초기화 |
+| `Cmd/Ctrl + Enter` | 전송 단축키 |
+
+---
+
+### UI-③ — Status Feedback 개선
+
+**구현 (`QueryPage.tsx`):**
+
+| 상태 | UI |
+| --- | --- |
+| `status: partial` | amber 배지 + "Partial results" 제목 + 경고 메시지 상세 |
+| `status: no_context` | 보라색 배지 + "No context found" 전용 fallback UI |
+| 백엔드 에러 (5xx/network) | 빨간 배지 + "Backend error" 명확히 구분 |
+
+**버그 수정:** `QueryResponse.warnings` (List) ↔ 프론트 `warning` (string) 불일치 수정
+- `types.ts`: `warning?: string` → `warnings?: string[]`
+- `QueryPage.tsx`: `res.warnings?.join(' | ')` 로 매핑
+
+---
+
+### 할루시네이션 다층 방어 (Prompt + Post-processing)
+
+#### SYSTEM_PROMPT 규칙 추가 (`generator.py`)
+
+| 규칙 | 내용 |
+| --- | --- |
+| **Rule 3 개선** | 토픽 자체 부재 시만 FALLBACK. qualitative 정보 있으면 반드시 보고 |
+| **Rule 3a (신규)** | 부분 답변 가능한 질문: covered 파트는 정확히 답하고, uncovered는 "not reported" 명시 |
+| **Rule 9 (신규)** | 테이블/메트릭 이름 verbatim 보존. `"Person Detection: 31.6%"` ← Lane Line IoU 재라벨 금지 |
+| **Rule 10 (신규)** | SOTA/best/superior 표현 시 "at the time of publication" 한정 의무화 |
+| **Rule 11 (신규)** | 컨텍스트에 없는 수치 삽입 절대 금지. trend만 있으면 trend만 서술 |
+
+**Few-shot 예시 교체:**
+
+- 기존: HybridNets 실제 수치 (92.8%, 90.5%, 85.4%, 31.6%) → 도메인 오염 위험
+- 변경: 완전 허구 도메인 (`ModelFoo / BenchmarkX / TaskA/B/C`) → cross-contamination 방지
+
+#### P12 — Metric Label-Value Fidelity Check (`generator.py`)
+
+```python
+def _check_metric_fidelity(answer, retrieved) -> list[str]:
+    # 답변의 XX.X% 주변 label context vs retrieved 청크 label context
+    # 단어 교집합 = ∅ → "Metric label mismatch for N%" warning
+```
+
+- `_metric_label_context()`: 수치 앞 60자에서 content word 추출
+- `_METRIC_LABEL_STOPWORDS`: 고빈도 비식별 단어 필터
+
+#### P13 — Numeric Existence Check (`generator.py`)
+
+```python
+def _check_numeric_existence(answer, retrieved) -> list[str]:
+    # 답변의 XX.X% 집합 - retrieved 청크의 XX.X% 집합 = 할루 의심 수치
+```
+
+- 답변에만 존재하고 어떤 청크에도 없는 숫자 → `"Numeric hallucination suspected"` warning
+
+#### `_build_context_block` 노이즈 헤더 필터 (`generator.py`)
+
+- `_is_noise_header()` 쿼리 시점 적용 범위 확장
+- 기존: `_build_citations()` 에만 적용
+- 추가: **`_build_context_block()`에도 적용** → LLM이 noise 헤더를 아예 보지 못하게 차단
+- 효과: `"Section: 84.37 CIFAR10"` 같은 표 셀 값이 LLM 컨텍스트에서 제거됨
+
+#### `main.py` 연동
+
+```python
+warnings += _check_metric_fidelity(answer, retrieved)
+warnings += _check_numeric_existence(answer, retrieved)
+```
+
+---
+
+### P9 확장 — 3자리 정수 헤더 패턴 (`ingest.py`)
+
+**문제:** `"199 ResNet101x1"` (테이블 행 번호 + 모델명) 이 section_header로 파싱 후 LLM 컨텍스트에 노출
+
+**추가 패턴:**
+
+```python
+re.compile(r'^\d{3,}\s'),  # 3+ digit leading integer: table row "199 ResNet101x1"
+```
+
+- 기존 `^\d+\.\d{2,}` (소수 2자리)는 정수 케이스 미커버
+- 섹션 번호는 통상 1~30 수준이므로 3자리 이상 = 테이블 행 인덱스로 판단
+- re-indexing 불필요 (쿼리 시점 필터)
+
+---
+
+### 단일 출처 amber 배지 (`QueryPage.tsx`)
+
+**목적:** 코퍼스 내 특정 논문 과도 의존 시각화
+
+| 출처 수 | UI |
+| --- | --- |
+| 1개 | `⚠ 1 source — verify independently` (amber) |
+| 2개 이상 | `Sources (N)` (slate, 정상) |
+
+---
+
+### 테스트 결과 요약
+
+| 쿼리 | 이전 | 이후 |
+| --- | --- | --- |
+| HybridNets BDD100K 성능 | `Person Detection: 31.6%` ❌ | `Lane Line IoU: 31.6%` ✅ |
+| HybridNets SOTA 표현 | "achieving SOTA" (시점 없음) ❌ | "at the time of publication" ✅ |
+| HybridNets person detection | 묵살 ❌ | "not reported in documents" ✅ |
+| ResNet Adam vs SGD | `89.33%` 할루 + HybridNets 오염 ❌ | qualitative 보고 + "exact values unavailable" ✅ |
+| ResNet Adam vs SGD | `Section: 84.37 CIFAR10` ❌ | `Section: —` (노이즈 필터) ✅ |
+
+---
+
+### 야간 세션 커밋 이력
+
+| 커밋 해시 | 메시지 |
+| --- | --- |
+| `cdc4302` | `feat(query): structured status feedback — error / no-context / partial warning` |
+| `c591c87` | `fix(generator): multi-layer hallucination defense + source diversity badge` |
+
+---
+
+## 현재 미완료 항목 (2026-03-26 기준)
+
+| ID | 내용 | 우선순위 |
+| --- | --- | --- |
+| — | Session/History: localStorage 기반 세션 저장 + 목록 + 로드 | 🔴 높음 |
+| — | 모바일 반응형 레이아웃 (SRS v2.1.0) | 🟢 낮음 |
+| — | 다크/라이트 모드 토글 (SRS v2.1.0) | 🟢 낮음 |
+
+---
+
+*작성일: 2026-03-24 ~ 03-26 / 작성자: Edwin R. Cho*
