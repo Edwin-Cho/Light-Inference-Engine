@@ -16,6 +16,8 @@ from app.auth.token import create_access_token
 from app.config import settings
 from app.models.schemas import (
     DeleteResponse,
+    DocumentItem,
+    DocumentListResponse,
     ErrorResponse,
     HealthResponse,
     IngestResponse,
@@ -244,7 +246,37 @@ async def ingest(
     return IngestResponse(filename=file.filename, chunks_indexed=chunks_indexed)
 
 
-# ── Delete ────────────────────────────────────────────────────────────────────
+# ── Documents List ──────────────────────────────────────────────────────────────────
+
+@app.get("/documents", response_model=DocumentListResponse, tags=["RAG"])
+async def list_documents(
+    _user: dict = Depends(require_role(Role.RESEARCHER)),
+) -> DocumentListResponse:
+    """FAISS 메타데이터를 기반으로 인덱싱된 문서 목록 반환 (청크 수 포함)."""
+    store = VectorStore.get()
+    metadata = store.get_all_metadata()
+
+    seen: dict[str, DocumentItem] = {}
+    for m in metadata:
+        doc_id = m.get("document_id", "")
+        filename = m.get("source_filename", "")
+        if not doc_id or not filename:
+            continue
+        if doc_id not in seen:
+            seen[doc_id] = DocumentItem(
+                document_id=doc_id,
+                source_filename=filename,
+                paper_title=m.get("paper_title") or None,
+                arxiv_id=m.get("arxiv_id") or None,
+                chunk_count=0,
+            )
+        seen[doc_id].chunk_count += 1
+
+    docs = sorted(seen.values(), key=lambda d: d.source_filename.lower())
+    return DocumentListResponse(documents=docs, total_chunks=len(metadata))
+
+
+# ── Delete ─────────────────────────────────────────────────────────────────────
 
 @app.delete("/document/{document_id}", response_model=DeleteResponse, tags=["RAG"])
 async def delete_document(

@@ -17,7 +17,7 @@ export interface QueryResponse {
 
 export interface IngestResponse {
   filename: string;
-  chunks_added: number;
+  chunks_indexed: number;
   status: string;
 }
 
@@ -42,4 +42,17 @@ export interface TokenResponse {
 export interface SuggestQueriesResponse {
   questions: string[];
   cached: boolean;
+}
+
+export interface DocumentItem {
+  document_id: string;
+  source_filename: string;
+  paper_title?: string;
+  arxiv_id?: string;
+  chunk_count: number;
+}
+
+export interface DocumentListResponse {
+  documents: DocumentItem[];
+  total_chunks: number;
 }

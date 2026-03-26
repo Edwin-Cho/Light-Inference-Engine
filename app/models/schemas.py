@@ -74,6 +74,21 @@ class RebuildResponse(BaseModel):
     status: str = "ok"
 
 
+# ── Document List ──────────────────────────────────────────────────────────
+
+class DocumentItem(BaseModel):
+    document_id: str
+    source_filename: str
+    paper_title: Optional[str] = None
+    arxiv_id: Optional[str] = None
+    chunk_count: int
+
+
+class DocumentListResponse(BaseModel):
+    documents: List[DocumentItem]
+    total_chunks: int
+
+
 # ── Suggest Queries ─────────────────────────────────────────────────────────
 
 class SuggestQueriesResponse(BaseModel):

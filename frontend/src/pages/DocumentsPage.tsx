@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { Upload, Trash2, FileText, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import type { DocumentItem } from '@/lib/types';
+import { Upload, Trash2, Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink, Database } from 'lucide-react';
 
 interface UploadResult {
   filename: string;
@@ -12,14 +13,29 @@ export default function DocumentsPage() {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<UploadResult[]>([]);
-  const [deleteTarget, setDeleteTarget] = useState('');
-  const [deleting, setDeleting] = useState(false);
-  const [deleteResult, setDeleteResult] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [totalChunks, setTotalChunks] = useState(0);
+  const [docsLoading, setDocsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const loadDocuments = useCallback(async () => {
+    setDocsLoading(true);
+    try {
+      const res = await api.getDocuments();
+      setDocuments(res.documents);
+      setTotalChunks(res.total_chunks);
+    } catch {
+      setDocuments([]);
+    } finally {
+      setDocsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void loadDocuments(); }, [loadDocuments]);
 
   const uploadFiles = async (files: FileList | File[]) => {
     const arr = Array.from(files).filter((f) =>
-      ['application/pdf', 'text/plain', 'text/markdown'].includes(f.type) ||
       f.name.endsWith('.md') || f.name.endsWith('.txt') || f.name.endsWith('.pdf')
     );
     if (!arr.length) return;
@@ -28,13 +44,14 @@ export default function DocumentsPage() {
     for (const file of arr) {
       try {
         const res = await api.ingest(file);
-        setResults((prev) => [...prev, { filename: file.name, status: 'success', message: `${res.chunks_added} chunks indexed` }]);
+        setResults((prev) => [...prev, { filename: file.name, status: 'success', message: `${res.chunks_indexed} chunks indexed` }]);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Upload failed';
         setResults((prev) => [...prev, { filename: file.name, status: 'error', message: msg }]);
       }
     }
     setUploading(false);
+    void loadDocuments();
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -43,30 +60,111 @@ export default function DocumentsPage() {
     void uploadFiles(e.dataTransfer.files);
   };
 
-  const handleDelete = async () => {
-    const name = deleteTarget.trim();
-    if (!name) return;
-    setDeleting(true);
-    setDeleteResult(null);
+  const handleDelete = async (doc: DocumentItem) => {
+    setDeletingId(doc.document_id);
     try {
-      const res = await api.deleteDocument(name);
-      setDeleteResult({ status: 'success', message: `Removed ${res.chunks_removed} chunks` });
-      setDeleteTarget('');
+      await api.deleteDocument(doc.document_id);
+      setDocuments((prev) => prev.filter((d) => d.document_id !== doc.document_id));
     } catch {
-      setDeleteResult({ status: 'error', message: 'Delete failed — check filename and try again' });
+      // silent — keep the row
     } finally {
-      setDeleting(false);
+      setDeletingId(null);
     }
   };
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      <div className="px-6 py-4 border-b border-slate-800">
-        <h2 className="text-white font-semibold">Documents</h2>
-        <p className="text-slate-400 text-xs mt-0.5">Upload and manage indexed papers</p>
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h2 className="text-white font-semibold">Documents</h2>
+          <p className="text-slate-400 text-xs mt-0.5">
+            {docsLoading ? 'Loading…' : `${documents.length} papers · ${totalChunks.toLocaleString()} chunks`}
+          </p>
+        </div>
+        <button
+          onClick={() => void loadDocuments()}
+          disabled={docsLoading}
+          className="flex items-center gap-1.5 text-slate-500 hover:text-slate-300 text-xs transition disabled:opacity-40"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${docsLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
       </div>
 
-      <div className="px-6 py-6 space-y-8 max-w-2xl">
+      <div className="px-6 py-6 space-y-8 max-w-3xl">
+
+        {/* Document List */}
+        <section>
+          <h3 className="text-sm font-medium text-slate-300 mb-3">Indexed Papers</h3>
+          <div className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
+            {docsLoading ? (
+              <div className="flex items-center justify-center py-12 gap-2 text-slate-500 text-sm">
+                <Loader2 className="w-4 h-4 animate-spin" /> Loading documents…
+              </div>
+            ) : documents.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+                <Database className="w-8 h-8 mb-2 opacity-40" />
+                <p className="text-sm">No documents indexed yet</p>
+                <p className="text-xs mt-1 opacity-60">Upload PDFs below to get started</p>
+              </div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-800 text-left">
+                    <th className="px-4 py-2.5 text-slate-500 font-medium text-xs">Paper</th>
+                    <th className="px-4 py-2.5 text-slate-500 font-medium text-xs w-20 text-right">Chunks</th>
+                    <th className="px-4 py-2.5 w-12"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {documents.map((doc) => (
+                    <tr key={doc.document_id} className="group hover:bg-slate-800/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-slate-200 text-xs font-medium truncate max-w-xs">
+                            {doc.paper_title || doc.source_filename}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-600 text-xs truncate">{doc.source_filename}</span>
+                            {doc.arxiv_id && (
+                              <a
+                                href={`https://arxiv.org/abs/${doc.arxiv_id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cyan-600 hover:text-cyan-400 transition flex items-center gap-0.5"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                <span className="text-xs">{doc.arxiv_id}</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right text-slate-500 text-xs tabular-nums">
+                        {doc.chunk_count}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => void handleDelete(doc)}
+                          disabled={deletingId === doc.document_id}
+                          className="opacity-0 group-hover:opacity-100 flex items-center justify-center w-7 h-7 rounded-lg text-slate-600 hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-40"
+                          title={`Delete ${doc.source_filename}`}
+                        >
+                          {deletingId === doc.document_id
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Trash2 className="w-3.5 h-3.5" />}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </section>
+
         {/* Upload Zone */}
         <section>
           <h3 className="text-sm font-medium text-slate-300 mb-3">Upload Documents</h3>
@@ -93,7 +191,7 @@ export default function DocumentsPage() {
           </div>
 
           {uploading && (
-            <div className="flex items-center gap-2 mt-4 text-purple-400 text-sm">
+            <div className="flex items-center gap-2 mt-4 text-indigo-400 text-sm">
               <Loader2 className="w-4 h-4 animate-spin" /> Uploading and indexing…
             </div>
           )}
@@ -118,43 +216,6 @@ export default function DocumentsPage() {
           )}
         </section>
 
-        {/* Delete Section */}
-        <section>
-          <h3 className="text-sm font-medium text-slate-300 mb-3">Delete Document</h3>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 space-y-3">
-            <div className="flex items-center gap-2 text-slate-400 text-xs">
-              <FileText className="w-4 h-4" />
-              Enter the exact filename (e.g. <code className="bg-slate-700 px-1.5 py-0.5 rounded text-slate-300">BERT.pdf</code>)
-            </div>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                value={deleteTarget}
-                onChange={(e) => setDeleteTarget(e.target.value)}
-                placeholder="filename.pdf"
-                className="flex-1 bg-slate-900/80 border border-slate-700/60 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500/60 focus:border-indigo-500/40 transition"
-              />
-              <button
-                onClick={() => void handleDelete()}
-                disabled={!deleteTarget.trim() || deleting}
-                className="flex items-center gap-2 bg-red-600/80 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm transition"
-              >
-                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                Delete
-              </button>
-            </div>
-            {deleteResult && (
-              <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
-                deleteResult.status === 'success'
-                  ? 'bg-green-500/10 border border-green-500/30 text-green-300'
-                  : 'bg-red-500/10 border border-red-500/30 text-red-300'
-              }`}>
-                {deleteResult.status === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                {deleteResult.message}
-              </div>
-            )}
-          </div>
-        </section>
       </div>
     </div>
   );

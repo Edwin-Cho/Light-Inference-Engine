@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { QueryResponse, IngestResponse, DeleteResponse, RebuildResponse, TokenResponse, SuggestQueriesResponse } from './types';
+import type { QueryResponse, IngestResponse, DeleteResponse, RebuildResponse, TokenResponse, SuggestQueriesResponse, DocumentListResponse } from './types';
 
 const client = axios.create({ baseURL: '/api' });
 
@@ -41,6 +41,11 @@ export const api = {
 
   suggestQueries: async (): Promise<SuggestQueriesResponse> => {
     const res = await client.get<SuggestQueriesResponse>('/suggest-queries');
+    return res.data;
+  },
+
+  getDocuments: async (): Promise<DocumentListResponse> => {
+    const res = await client.get<DocumentListResponse>('/documents');
     return res.data;
   },
 };
