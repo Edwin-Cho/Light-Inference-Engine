@@ -59,3 +59,41 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/* ── Layout structural CSS variables ─────────────────────────────────────── */
+:root {
+  --layout-bg: #0a0a0f;
+  --sidebar-bg: rgba(255, 255, 255, 0.025);
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+}
+
+/* ── Light mode: slate palette swap + structural overrides ────────────────── */
+html:not(.dark) {
+  --layout-bg: #f1f5f9;
+  --sidebar-bg: rgba(0, 0, 0, 0.03);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+
+  /* Invert dark slate backgrounds → light */
+  --color-slate-950: #ffffff;
+  --color-slate-900: #f8fafc;
+  --color-slate-800: #f1f5f9;
+  --color-slate-700: #e2e8f0;
+  --color-slate-600: #94a3b8;
+
+  /* Invert light slate text → dark */
+  --color-slate-500: #64748b;
+  --color-slate-400: #475569;
+  --color-slate-300: #334155;
+  --color-slate-200: #1e293b;
+  --color-slate-100: #0f172a;
+  --color-slate-50:  #020617;
+}
+
+/* text-white → dark text in light mode */
+html:not(.dark) .text-white {
+  color: #0f172a;
+}
+
+/* placeholder colors in light mode */
+html:not(.dark) .placeholder-slate-600::placeholder { color: #94a3b8; }
+html:not(.dark) .placeholder-slate-500::placeholder { color: #94a3b8; }

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { BookOpen, Loader2, Lock, User } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -25,9 +27,13 @@ export default function LoginPage() {
     }
   };
 
+  const bgStyle = theme === 'dark'
+    ? { background: 'radial-gradient(ellipse at 60% 20%, #2d1b6940 0%, transparent 60%), radial-gradient(ellipse at 10% 80%, #1e3a5f30 0%, transparent 50%), #0a0a0f' }
+    : { background: 'radial-gradient(ellipse at 60% 20%, #e0e7ff60 0%, transparent 60%), radial-gradient(ellipse at 10% 80%, #dbeafe40 0%, transparent 50%), #f1f5f9' };
+
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{ background: 'radial-gradient(ellipse at 60% 20%, #2d1b6940 0%, transparent 60%), radial-gradient(ellipse at 10% 80%, #1e3a5f30 0%, transparent 50%), #0a0a0f' }}>
+      style={bgStyle}>
 
 
       <div className="w-full max-w-sm px-4 relative z-10">

@@ -1,8 +1,9 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserRole } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useEffect, useState } from 'react';
-import { BookOpen, MessageSquare, FolderOpen, Settings, LogOut, Wifi, WifiOff } from 'lucide-react';
+import { BookOpen, MessageSquare, FolderOpen, Settings, LogOut, Wifi, WifiOff, Sun, Moon } from 'lucide-react';
 
 const allNavItems = [
   { to: '/', icon: MessageSquare, label: 'Query', minRole: 'researcher' as UserRole },
@@ -48,6 +49,7 @@ function HealthBadge() {
 
 export default function Layout() {
   const { logout, role } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -56,12 +58,12 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex h-screen text-white overflow-hidden" style={{ background: '#0a0a0f' }}>
+    <div className="flex h-screen text-white overflow-hidden" style={{ background: 'var(--layout-bg)' }}>
       {/* Sidebar */}
       <aside className="w-60 flex flex-col shrink-0 border-r"
-        style={{ background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.07)' }}>
+        style={{ background: 'var(--sidebar-bg)', borderColor: 'var(--sidebar-border)' }}>
 
-        <div className="flex items-center gap-3 px-5 py-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+        <div className="flex items-center gap-3 px-5 py-5 border-b" style={{ borderColor: 'var(--sidebar-border)' }}>
           <div className="relative">
             <div className="absolute inset-0 bg-slate-600/30 rounded-xl blur-sm" />
             <div className="relative w-9 h-9 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl flex items-center justify-center">
@@ -99,7 +101,14 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="px-3 py-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+        <div className="px-3 py-4 border-t space-y-0.5" style={{ borderColor: 'var(--sidebar-border)' }}>
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all duration-150"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </button>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm text-slate-600 hover:text-red-400 hover:bg-red-500/8 transition-all duration-150"
