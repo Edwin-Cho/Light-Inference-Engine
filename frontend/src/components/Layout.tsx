@@ -1,18 +1,30 @@
+/**
+ * Layout — 앱 주스켈레톤 (Sidebar + Main Content 영역)
+ *
+ * 구성:
+ *   - 사이드바: LiE 로고, 백엔드 헬스 버지(HealthBadge), 네비게이션, 세션 히스토리
+ *   - 메인 콘텐츠: React Router <Outlet /> (페이지별 콘텐츠 렌더링)
+ *
+ * RBAC: 사용자 role에 따라 네비 메뉴 필터링 (researcher < lab_pi < admin)
+ * 세션 rename: 더블클릭 또는 ✏️ 아이콘으로 인라인 수정 활성화
+ */
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserRole } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSession } from '@/contexts/SessionContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { MessageSquare, FolderOpen, Settings, LogOut, Wifi, WifiOff, Sun, Moon, Plus, Trash2, Clock, Pencil } from 'lucide-react';
 import LiELogo from '@/components/LiELogo';
 
+/** 전체 내비게이션 항목 (minRole 미만은 사이드바에서 숨김) */
 const allNavItems = [
   { to: '/', icon: MessageSquare, label: 'Query', minRole: 'researcher' as UserRole },
   { to: '/documents', icon: FolderOpen, label: 'Documents', minRole: 'lab_pi' as UserRole },
   { to: '/admin', icon: Settings, label: 'Admin', minRole: 'admin' as UserRole },
 ];
 
+/** 역할을 숫자로 매핑 → 단순 비교로 RBAC 접근 제어 */
 const ROLE_LEVEL: Record<UserRole, number> = { researcher: 1, lab_pi: 2, admin: 3 };
 
 function hasAccess(userRole: UserRole | null, minRole: UserRole): boolean {
@@ -20,21 +32,34 @@ function hasAccess(userRole: UserRole | null, minRole: UserRole): boolean {
   return ROLE_LEVEL[userRole] >= ROLE_LEVEL[minRole];
 }
 
+/** 백엔드 API URL — VITE_API_URL env 미설정 시 개발 서버 기본값 사용 */
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+
+/**
+ * 백엔드 서버 생존 여부를 30초마다 폴링하여 표시하는 배지 컴포넌트
+ * null(초기) → pulse 애니메이션, true → 초록 Online, false → 빨간 Offline
+ */
 function HealthBadge() {
   const [online, setOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
     const check = async () => {
       try {
-        const res = await fetch('/api/health', { signal: AbortSignal.timeout(3000) });
+        // Bug 1 fix: /api/health → API_BASE/health (프록시 의존 제거, 프로덕션 호환)
+        // Improvement 1 fix: AbortController 폴백 (AbortSignal.timeout Chrome103/Safari16 미만 미지원)
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(`${API_BASE}/health`, { signal: controller.signal });
+        clearTimeout(timer);
         setOnline(res.ok);
       } catch {
         setOnline(false);
       }
     };
-    void check();
-    const id = setInterval(() => void check(), 30000);
-    return () => clearInterval(id);
+    // Improvement 3 fix: void check() → IIFE (async 의도 명시적 표현)
+    (async () => { await check(); })();
+    const id = setInterval(check, 30_000);  // 이후 30초 간격
+    return () => clearInterval(id);  // 언마운트 시 인터벌 정리
   }, []);
 
   if (online === null) return <span className="w-2 h-2 bg-slate-600 rounded-full animate-pulse" />;
@@ -49,6 +74,7 @@ function HealthBadge() {
   );
 }
 
+/** 타임스탬프를 "just now / 3m ago / 2h ago / 1d ago" 형태로 변환 */
 function formatRelativeTime(ts: number): string {
   const diff = Date.now() - ts;
   const mins = Math.floor(diff / 60000);
@@ -63,11 +89,13 @@ export default function Layout() {
   const { logout, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const { sessions, currentId, startNew, openSession, removeSession, renameSession } = useSession();
+  const { sessions, currentId, startNew, openSession, removeSession, renameSession, clearAllSessions } = useSession();
+  // 인라인 이름 수정 상태: editingId가 null이 아니면 해당 세션이 편집 모드
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
 
   const handleLogout = () => {
+    clearAllSessions();  // Flaw 3 fix: 로그아웃 시 세션 상태 정리 → 다음 사용자에게 노출 방지
     logout();
     navigate('/login');
   };
@@ -80,6 +108,36 @@ export default function Layout() {
   const handleOpenSession = (id: string) => {
     openSession(id);
     navigate('/');
+  };
+
+  // Flaw 2 fix: 60초마다 강제 re-render → stale relative time 방지
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Bug 2 fix: click/dblclick 구분 250ms 디바운스 타이머
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleSessionClick = (id: string) => {
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    clickTimer.current = setTimeout(() => {
+      if (editingId !== id) handleOpenSession(id);
+    }, 250);
+  };
+
+  const handleSessionDoubleClick = (e: MouseEvent, id: string, title: string) => {
+    e.stopPropagation();
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    setEditingId(id);
+    setEditingTitle(title);
+  };
+
+  // Flaw 1 fix: 빈 문자열 rename 방지 — trim 후 비어있으면 저장 안 함
+  const commitRename = (id: string, title: string) => {
+    if (title.trim()) renameSession(id, title.trim());
+    setEditingId(null);
   };
 
   return (
@@ -133,6 +191,7 @@ export default function Layout() {
             <span className="text-[10px] text-slate-700 font-medium uppercase tracking-wider">Recent</span>
           </div>
 
+          {/* 세션 목록: 스크롤 가능, 각 세션은 클릭으로 열기 / 호버 시 편집·삭제 버튼 표시 */}
           <div className="overflow-y-auto flex-1 space-y-0.5 pb-2">
             {sessions.length === 0 ? (
               <p className="text-xs text-slate-700 px-2 py-1.5">No sessions yet</p>
@@ -140,7 +199,7 @@ export default function Layout() {
               sessions.map((s) => (
                 <div
                   key={s.id}
-                  onClick={() => { if (editingId !== s.id) handleOpenSession(s.id); }}
+                  onClick={() => handleSessionClick(s.id)}
                   className={`group flex items-start gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-all duration-150 ${
                     currentId === s.id
                       ? 'bg-slate-800 text-slate-200'
@@ -149,33 +208,27 @@ export default function Layout() {
                 >
                   <div className="flex-1 min-w-0">
                     {editingId === s.id ? (
+                      // 편집 모드: 인라인 input — blur 또는 Enter로 저장, Escape로 취소
                       <input
                         autoFocus
                         className="w-full text-xs bg-slate-700 text-slate-100 rounded px-1.5 py-0.5 outline-none border border-emerald-500/50"
                         value={editingTitle}
                         onChange={(e) => setEditingTitle(e.target.value)}
-                        onBlur={() => {
-                          renameSession(s.id, editingTitle);
-                          setEditingId(null);
-                        }}
+                        onBlur={() => commitRename(s.id, editingTitle)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
-                            renameSession(s.id, editingTitle);
-                            setEditingId(null);
+                            commitRename(s.id, editingTitle);
                           } else if (e.key === 'Escape') {
-                            setEditingId(null);
+                            setEditingId(null);  // 변경 없이 취소
                           }
                         }}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}  // 클릭이 세션 열기로 전파 방지
                       />
                     ) : (
+                      // 표시 모드: 더블클릭으로 편집 활성화
                       <p
                         className="text-xs truncate leading-tight"
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          setEditingId(s.id);
-                          setEditingTitle(s.title);
-                        }}
+                        onDoubleClick={(e) => handleSessionDoubleClick(e, s.id, s.title)}
                       >
                         {s.title}
                       </p>
@@ -186,6 +239,7 @@ export default function Layout() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (clickTimer.current) clearTimeout(clickTimer.current);
                         setEditingId(s.id);
                         setEditingTitle(s.title);
                       }}
@@ -194,7 +248,11 @@ export default function Layout() {
                       <Pencil className="w-3 h-3" />
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); removeSession(s.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (editingId === s.id) setEditingId(null);  // Flaw 4 fix: 고아 편집 상태 정리
+                        removeSession(s.id);
+                      }}
                       className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-slate-600 hover:text-red-400 transition"
                     >
                       <Trash2 className="w-3 h-3" />

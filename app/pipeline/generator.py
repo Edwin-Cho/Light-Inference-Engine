@@ -1,3 +1,13 @@
+"""Answer generation pipeline for OnDevice Scholar RAG.
+
+Responsibilities (in order of execution inside ``Generator.generate``):
+    1. Build a context block from retrieved FAISS chunks  (_build_context_block)
+    2. Run Qwen2.5-3B-Instruct with a structured system prompt  (Generator._load_model / generate)
+    3. P16 — Post-hoc citation injection for uncited sentences  (_inject_citations_post_hoc)
+    4. P13 — Tier-2 numeric scrubbing: replace hallucinated numbers with [?]  (_scrub_hallucinated_numerics)
+    5. Citation validation & pruning  (_build_citations, _filter_by_contribution)
+    6. Hallucination warnings: numeric existence (P13) + metric-label fidelity (P12)  (_check_numeric_existence, _check_metric_fidelity)
+"""
 from __future__ import annotations
 
 import json
@@ -14,6 +24,8 @@ from app.pipeline.ingest import _is_noise_header, _extract_arxiv_id, _extract_pa
 
 FALLBACK_ANSWER = "No relevant information found in the provided documents."
 
+# 모델이 "모르겠다"고 답할 때 사용하는 표현 목록
+# _is_fallback()에서 이 중 하나라도 포함되면 FALLBACK_ANSWER로 대체
 _FALLBACK_SUBSTRINGS = (
     "no relevant information found",
     "i don't know",
@@ -65,11 +77,23 @@ Rules:
 
 
 def _build_context_block(retrieved: List[Tuple[dict, float]]) -> str:
+    """Format retrieved chunks into a single context string for the LLM prompt.
+
+    Each chunk is prefixed with its source metadata (filename, section, page, score)
+    so the model can generate grounded [Source: ...] citations.
+
+    Args:
+        retrieved: List of (metadata_dict, cosine_score) from the vector store.
+
+    Returns:
+        A single string with chunks separated by ``---`` dividers.
+    """
     blocks = []
     for meta, score in retrieved:
         filename = meta.get("source_filename", "unknown")
         page = meta.get("page_number", "?")
         raw_header = meta.get("section_header")
+        # 노이즈성 헤더(e.g. 'References', 빈 문자열)는 '—'로 대체
         section = (raw_header if raw_header and not _is_noise_header(raw_header) else None) or "—"
         text = meta.get("text", "")
         blocks.append(
@@ -84,6 +108,7 @@ def _is_fallback(answer: str) -> bool:
     return any(kw in lower for kw in _FALLBACK_SUBSTRINGS)
 
 
+# LLM 답변 내 [Source: filename | ...] 패턴에서 파일명만 추출하는 정규식
 _SOURCE_PATTERN = re.compile(r'\[Source:\s*([^|\]]+?)\s*\|', re.IGNORECASE)
 
 
@@ -94,14 +119,19 @@ def _extract_cited_sources(answer: str) -> set[str]:
     return {m.group(1).strip() for m in _SOURCE_PATTERN.finditer(answer)}
 
 
+# P12/P13 경고 시스템에서 사용: "XX.X%" 형태의 퍼센트 숫자만 추출
+# 예: "achieves 92.3% accuracy" → "92.3"
 _METRIC_NUM_RE = re.compile(r'\b(\d+\.?\d*)\s*%')
 
+# 퍼센트 앞 문맥 분석 시 의미 없는 일반 단어 제거용 불용어
 _METRIC_LABEL_STOPWORDS = frozenset({
     'the', 'for', 'its', 'with', 'and', 'is', 'are', 'was', 'has',
     'achieves', 'score', 'rate', 'value', 'result', 'performance',
     'percentage', 'point', 'reaches', 'obtains', 'shows', 'gets',
 })
 
+# "진짜 메트릭 이름"을 식별하는 지표 단어 목록
+# 이 중 하나라도 포함되어 있어야 label mismatch 경고 발생 → false positive 방지
 _METRIC_INDICATOR_WORDS = frozenset({
     'accuracy', 'acc', 'precision', 'recall', 'f1', 'bleu', 'rouge',
     'top1', 'top5', 'map', 'ndcg', 'mrr', 'perplexity', 'wer', 'cer',
@@ -119,13 +149,22 @@ def _looks_like_metric_label(label: str) -> bool:
 
 
 def _metric_label_context(text: str, window: int = 60) -> dict[str, list[str]]:
-    """
-    Returns {num_str: [label word-sequences from surrounding context]}.
-    Extracts up to `window` chars before each XX.X% match.
+    """Extract label context for each percentage figure found in text.
+
+    For each ``XX.X%`` match, captures up to ``window`` characters before it
+    and returns the last 5 meaningful words as a label sequence.
+
+    Args:
+        text: Raw text to analyze (answer or chunk).
+        window: Character window size before the number to inspect.
+
+    Returns:
+        Mapping of ``{num_str: [label_word_sequences]}``.
     """
     result: dict[str, list[str]] = {}
     for m in _METRIC_NUM_RE.finditer(text):
         num = m.group(1)
+        # 숫자 앞 최대 window 글자를 잘라서 컨텍스트로 사용
         start = max(0, m.start() - window)
         ctx = text[start:m.start()]
         words = [
@@ -133,7 +172,7 @@ def _metric_label_context(text: str, window: int = 60) -> dict[str, list[str]]:
             if w not in _METRIC_LABEL_STOPWORDS
         ]
         if words:
-            result.setdefault(num, []).append(' '.join(words[-5:]))  # last 5 content words
+            result.setdefault(num, []).append(' '.join(words[-5:]))  # 마지막 5개 의미 단어만 유지
     return result
 
 
@@ -141,20 +180,30 @@ def _check_numeric_existence(
     answer: str,
     retrieved: List[Tuple[dict, float]],
 ) -> list[str]:
+    """P13: Check whether percentage figures in the answer exist verbatim in context.
+
+    Any ``XX.X%`` value found in the answer but absent from all retrieved chunks
+    is flagged as a potentially hallucinated figure.
+
+    Args:
+        answer: The LLM-generated answer string.
+        retrieved: List of (metadata_dict, score) retrieved from FAISS.
+
+    Returns:
+        List of warning strings (empty if no hallucination detected).
     """
-    P13: Numeric existence check.
-    Any XX.X% value in the answer that does NOT appear verbatim in any
-    retrieved chunk is flagged as a potential hallucinated figure.
-    """
+    # 답변에서 퍼센트 숫자 집합 추출
     answer_nums = {m.group(1) for m in _METRIC_NUM_RE.finditer(answer)}
     if not answer_nums:
         return []
 
+    # 전체 retrieved 청크에서 퍼센트 숫자 집합 추출
     chunk_nums: set[str] = set()
     for meta, _ in retrieved:
         for m in _METRIC_NUM_RE.finditer(meta.get("text", "")):
             chunk_nums.add(m.group(1))
 
+    # 답변에만 있고 청크에는 없는 숫자 = 할루시네이션 의심
     hallucinated = sorted(answer_nums - chunk_nums, key=float)
     if not hallucinated:
         return []
@@ -168,16 +217,25 @@ def _check_metric_fidelity(
     answer: str,
     retrieved: List[Tuple[dict, float]],
 ) -> list[str]:
+    """P12: Detect metric label-value mismatches between answer and source context.
+
+    For each ``XX.X%`` in the answer, compares the surrounding label words
+    against the same number's context in the retrieved chunks.
+    Zero word-overlap means the model assigned the figure to a wrong metric label.
+
+    Args:
+        answer: The LLM-generated answer string.
+        retrieved: List of (metadata_dict, score) retrieved from FAISS.
+
+    Returns:
+        List of warning strings describing each mismatch (empty if clean).
     """
-    P12: Metric label-value fidelity check.
-    For each XX.X% value in the answer, compare the surrounding label context
-    against the same value's context in the retrieved chunks.
-    Zero word-overlap → mismatch warning.
-    """
+    # 답변의 각 퍼센트 숫자 → 주변 레이블 단어 매핑
     answer_map = _metric_label_context(answer)
     if not answer_map:
         return []
 
+    # retrieved 청크의 각 퍼센트 숫자 → 주변 레이블 단어 매핑 (ground truth)
     source_map: dict[str, list[str]] = {}
     for meta, _ in retrieved:
         for num, labels in _metric_label_context(meta.get("text", "")).items():
@@ -186,17 +244,19 @@ def _check_metric_fidelity(
     warnings: list[str] = []
     for num, answer_labels in answer_map.items():
         if num not in source_map:
-            continue  # number absent from context; harder to verify
+            continue  # 청크에 없는 숫자는 P13에서 처리, 여기서는 레이블 불일치만 검사
 
+        # 청크 레이블의 모든 단어를 하나의 집합으로 합침
         source_words: set[str] = set()
         for lbl in source_map[num]:
             source_words.update(lbl.split())
 
         for a_lbl in answer_labels:
             if not _looks_like_metric_label(a_lbl):
-                continue  # skip: garbled OCR or generic phrase, not a real metric label
+                continue  # OCR 잡음이나 일반 문구 → 메트릭 레이블 아님, 건너뜀
             a_words = set(a_lbl.split())
             if a_words and not (a_words & source_words):
+                # 답변 레이블과 청크 레이블이 단어 교집합 없음 → 레이블 혼동 의심
                 best_src = source_map[num][0] if source_map[num] else "unknown"
                 warnings.append(
                     f"Metric label mismatch for {num}%: "
@@ -227,25 +287,38 @@ def _filter_by_contribution(
     retrieved: List[Tuple[dict, float]],
     min_overlap: int = 2,
 ) -> List[Citation]:
-    """
-    P11: 답변-citation 불일치 필터.
-    답변 키워드와 청크 텍스트 키워드 교집합이 min_overlap 미만이면 제거.
-    전체 필터링 시 원본 반환 (안전 폴백).
+    """P11: Remove citations whose source chunk has low keyword overlap with the answer.
+
+    Prevents low-relevance chunks from appearing as citations even if they
+    technically passed the score threshold.
+
+    Args:
+        answer: The LLM-generated answer string.
+        citations: Candidate citations to filter.
+        retrieved: Full list of retrieved (metadata, score) pairs.
+        min_overlap: Minimum number of shared keywords required to keep a citation.
+
+    Returns:
+        Filtered citation list. Falls back to the original list if all are filtered out.
     """
     answer_kw = _extract_keywords(answer)
+    # 답변이 너무 짧으면 키워드 기반 필터 신뢰도 낮음 → 필터 건너뜀
     if len(answer_kw) < min_overlap * 3:
         return citations
 
-    chunk_map: dict[str, str] = {}
+    # 파일명 → 모든 청크 텍스트 목록 매핑 (첫 청크만 참조하면 이후 청크의 키워드 누락)
+    chunk_map: dict[str, list[str]] = {}
     for meta, _ in retrieved:
         fn = meta.get("source_filename", "")
-        if fn and fn not in chunk_map:
-            chunk_map[fn] = meta.get("text", "")
+        if fn:
+            chunk_map.setdefault(fn, []).append(meta.get("text", ""))
 
+    # 교집합 키워드 수 >= min_overlap인 citation만 유지 (모든 청크 텍스트 합산)
     filtered = [
         c for c in citations
-        if len(answer_kw & _extract_keywords(chunk_map.get(c.source_filename, ""))) >= min_overlap
+        if len(answer_kw & _extract_keywords(" ".join(chunk_map.get(c.source_filename, [])))) >= min_overlap
     ]
+    # 전부 제거되면 원본 반환 (안전 폴백 — citation 없는 답변 방지)
     return filtered if filtered else citations
 
 
@@ -277,24 +350,35 @@ def _match_citations_by_title(
 
 
 def _build_citations(retrieved: List[Tuple[dict, float]]) -> List[Citation]:
-    """
-    Citation Validator: retrieved 청크의 메타데이터를 citation으로 변환.
-    파일 단위로 중복 제거하여 반환.
+    """Build a deduplicated list of Citation objects from retrieved chunks.
+
+    Applies ``citation_min_score`` threshold (default 0.65) to filter noise.
+    Deduplicates by filename so each paper appears at most once.
+    Falls back to PyMuPDF title extraction if paper_title is missing from metadata.
+
+    Args:
+        retrieved: List of (metadata_dict, cosine_score) from the vector store.
+
+    Returns:
+        List of Citation objects, one per unique source file above the score threshold.
     """
     seen: set[str] = set()
     citations: List[Citation] = []
 
     for meta, score in retrieved:
+        # citation_min_score(0.65) 미만 청크는 품질이 낮아 citation에서 제외
         if score < settings.citation_min_score:
             continue
         filename = meta.get("source_filename", "")
         if filename and filename not in seen:
             raw_header = meta.get("section_header")
+            # 노이즈 헤더(예: 숫자만 있는 헤더, 빈 문자열)는 None 처리
             section_header = None if (raw_header and _is_noise_header(raw_header)) else raw_header
             arxiv_id = meta.get("arxiv_id") or _extract_arxiv_id(filename)
             paper_title = meta.get("paper_title") or ""
             stem_fallback = filename.rsplit(".", 1)[0].replace("_", " ")
             if not paper_title or paper_title == stem_fallback:
+                # 메타데이터에 title이 없으면 PDF를 직접 열어 첫 페이지에서 추출 시도
                 pdf_path = settings.data_raw_dir / filename
                 if pdf_path.suffix.lower() == ".pdf" and pdf_path.exists():
                     try:
@@ -311,13 +395,17 @@ def _build_citations(retrieved: List[Tuple[dict, float]]) -> List[Citation]:
                 page_number=meta.get("page_number"),
                 score=round(score, 4),
             ))
-            seen.add(filename)
+            seen.add(filename)  # 파일 단위 중복 방지
 
     return citations
 
 
+# 문장 경계 분리: '.', '!', '?' 다음 공백 기준
+# lookbehind로 구분자 자체는 유지하면서 분리
 _SENT_SPLIT_RE = re.compile(r'(?<=[.!?])\s+')
 
+# P13 Tier-2 숫자 탐지 정규식
+# 주의: Python re 모듈은 가변 길이 lookbehind 미지원 → citation 보호는 split으로 처리
 _NUM_RE = re.compile(
     r"""
     \b
@@ -333,10 +421,21 @@ _NUM_RE = re.compile(
 
 
 def _extract_context_numbers(retrieved: List[Tuple[dict, float]]) -> set[str]:
-    """retrieved 청크 전체에서 등장하는 숫자 문자열 집합 반환."""
+    """Collect all numeric token strings from retrieved chunks.
+
+    Used as the ground-truth set for P13 scrubbing: any number in the answer
+    that is NOT in this set is a candidate for replacement with ``[?]``.
+
+    Args:
+        retrieved: List of (metadata_dict, score) from FAISS search.
+
+    Returns:
+        Set of numeric strings (e.g. ``{'64', '0.1', '90%', '3B'}``).
+    """
     nums: set[str] = set()
     for meta, _ in retrieved:
-        text = meta.get("text", "") + " " + meta.get("content", "")
+        # text 필드에서만 추출 (content 키는 ingest 스키마에 없음)
+        text = meta.get("text", "")
         for m in _NUM_RE.finditer(text):
             nums.add(m.group(1).strip())
     return nums
@@ -346,42 +445,59 @@ def _scrub_hallucinated_numerics(
     answer: str,
     retrieved: List[Tuple[dict, float]],
 ) -> str:
-    """
-    Tier 2 Post-hoc Numeric Scrubbing (P13).
-    answer에 포함된 숫자 중 retrieved 청크에 없는 것을 탐지하여
-    해당 숫자를 '[?]'로 대체. 추가 inference 없음.
+    """P13 Tier-2: Replace numbers in the answer that are absent from retrieved context.
+
+    Works entirely post-hoc (no additional LLM inference).
+    Numbers verified in context are left intact; unverified ones become ``[?]``.
 
     Coverage:
-    - 정수/소수/퍼센트/배수(k, M, B, x)
-    - citation 태그 내부 숫자는 건드리지 않음
-    - 연도(1000~2099)는 false positive 방지를 위해 제외
+        - Integers, decimals, percentages, and unit suffixes (k, M, B, x)
+        - Numbers inside ``[Source: ...]`` citation tags are never modified
+        - Years (1000–2099) are excluded to avoid false positives
+
+    Args:
+        answer: The LLM-generated answer string (after P16 injection).
+        retrieved: List of (metadata_dict, score) from FAISS search.
+
+    Returns:
+        Answer string with unverified numbers replaced by ``[?]``.
     """
+    # Ground-truth 숫자 집합: retrieved 청크 전체에서 추출
     context_nums = _extract_context_numbers(retrieved)
     if not context_nums:
+        # 청크에서 숫자를 전혀 못 읽은 경우 스크러빙 건너뜀 (안전 폴백)
         return answer
 
     def _replace(m: re.Match) -> str:
+        """단일 숫자 매치에 대해 대체 여부를 결정하는 내부 콜백."""
         val = m.group(1).strip()
         if not val:
             return m.group(0)
+        # 단위(%,k,M,B,x,공백) 제거 후 순수 숫자 문자열 추출
         bare = re.sub(r'[%kMBx\s]', '', val)
         try:
             num_float = float(bare)
         except ValueError:
-            return m.group(0)
+            return m.group(0)  # 파싱 불가 → 건드리지 않음
+        # 연도 범위(1000~2099)는 false positive 가능성 높아 제외
         if 1000 <= num_float <= 2099:
             return m.group(0)
+        # 단위 포함 형태 또는 순수 숫자 중 하나라도 context에 있으면 유지
         if val in context_nums or bare in context_nums:
             return m.group(0)
+        # 검증 실패 → [?]로 대체
         return m.group(0).replace(val, '[?]', 1)
 
+    # [Source: ...] 태그를 기준으로 텍스트를 분리하여 태그 내부는 스크러빙 제외
     citation_safe_re = re.compile(r'(\[Source:[^\]]+\])')
     parts = citation_safe_re.split(answer)
     scrubbed_parts = []
     for part in parts:
         if citation_safe_re.fullmatch(part):
+            # citation 태그 자체는 그대로 유지
             scrubbed_parts.append(part)
         else:
+            # 일반 텍스트 구간에만 스크러빙 적용
             scrubbed_parts.append(_NUM_RE.sub(_replace, part))
     return ''.join(scrubbed_parts)
 
@@ -389,23 +505,42 @@ def _scrub_hallucinated_numerics(
 def _inject_citations_post_hoc(
     answer: str,
     retrieved: List[Tuple[dict, float]],
-    min_overlap: float = 0.15,
+    min_overlap: float | None = None,
 ) -> str:
+    """P16: Inject [Source: ...] citations into sentences that lack them.
+
+    For each sentence without a citation tag, computes Jaccard-style word overlap
+    against each retrieved chunk. If the best overlap meets ``min_overlap``,
+    appends the matching chunk's citation at the sentence end.
+    No additional LLM inference — O(sentences × chunks) string operations only.
+
+    Args:
+        answer: Raw LLM answer before post-processing.
+        retrieved: List of (metadata_dict, cosine_score) from FAISS.
+        min_overlap: Minimum fraction of sentence words that must appear in
+            the best-matching chunk. Defaults to
+            ``settings.citation_injection_min_overlap`` (0.15, eval-optimised).
+            Pass an explicit value to override in tests.
+
+    Returns:
+        Answer string with inline citations injected where applicable.
     """
-    Post-hoc Citation Injection (P16).
-    [Source:] 태그가 없는 문장마다 retrieved 청크와 word-overlap을 계산,
-    min_overlap 이상인 최적 청크의 citation을 문장 끝에 삽입.
-    추가 inference 없음 — O(sentences × chunks) 순수 문자열 연산.
-    """
+    # None이면 config에서 최적값 로드 (하드코딩 제거 → 재현성 보장)
+    if min_overlap is None:
+        min_overlap = settings.citation_injection_min_overlap
+    # 문장 단위로 분리 (구분자 `.!?` 유지)
     sentences = _SENT_SPLIT_RE.split(answer)
     result: list[str] = []
 
     for sent in sentences:
+        # 빈 문장 또는 이미 citation이 있는 문장은 그대로 패스
         if not sent.strip() or '[Source:' in sent:
             result.append(sent)
             continue
 
+        # 4글자 이상 단어만 추출 → 의미 있는 내용어 기반 overlap 계산
         sent_words = set(re.findall(r'[a-zA-Z]{4,}', sent.lower()))
+        # 내용어가 5개 미만이면 짧은 전환문 등 → citation 부적합, 건너뜀
         if len(sent_words) < 5:
             result.append(sent)
             continue
@@ -414,35 +549,53 @@ def _inject_citations_post_hoc(
         best_meta: dict | None = None
 
         for meta, score in retrieved:
+            # citation_min_score(0.65) 미만 청크는 citation 출처로 신뢰도 낮음
             if score < settings.citation_min_score:
                 continue
             chunk_words = set(re.findall(r'[a-zA-Z]{4,}', meta.get("text", "").lower()))
             if not chunk_words:
                 continue
+            # overlap = (문장 단어 ∩ 청크 단어) / 문장 단어 수
             overlap = len(sent_words & chunk_words) / len(sent_words)
             if overlap > best_overlap:
                 best_overlap = overlap
                 best_meta = meta
 
         if best_overlap >= min_overlap and best_meta:
+            # 최적 청크의 citation 태그를 문장 끝에 삽입
             filename = best_meta.get("source_filename", "unknown")
             raw_header = best_meta.get("section_header")
             section = (raw_header if raw_header and not _is_noise_header(raw_header) else None) or "—"
             page = best_meta.get("page_number", "?")
             result.append(f"{sent} [Source: {filename} | Section: {section} | p.{page}]")
         else:
+            # min_overlap 미달 → citation 없이 원문 유지
             result.append(sent)
 
-    return " ".join(result)
+    # 원본 문장 구분자(공백 / \n\n 등)를 복원하여 LaTeX 블록 및 단락 구조 보존
+    # " ".join() 사용 시 \n\n 단락 구분이 평탄화되어 LaTeX $$ 블록 렌더링이 깨짐
+    seps = _SENT_SPLIT_RE.findall(answer)
+    output: list[str] = []
+    for i, sent in enumerate(result):
+        output.append(sent)
+        if i < len(seps):
+            output.append(seps[i])
+    return "".join(output)
 
 
 class Generator:
-    """
-    Qwen2.5-3B-Instruct 추론 엔진.
-    - CUDA: 4-bit NF4 quantization (bitsandbytes)
-    - MPS / CPU: float16 / float32 자동 fallback
+    """Singleton inference engine wrapping Qwen2.5-3B-Instruct.
+
+    Hardware-adaptive loading strategy:
+        - CUDA available + load_in_4bit=True → 4-bit NF4 quantization (bitsandbytes)
+        - Apple MPS available → float16 on Metal GPU
+        - Fallback → float32 on CPU
+
+    Use ``Generator.get()`` to obtain the shared instance.
+    Direct instantiation loads the model weights (~3GB), so singleton is critical.
     """
 
+    # 싱글턴 인스턴스 — 서버 전체에서 모델을 한 번만 로드하기 위해 사용
     _instance: "Generator | None" = None
 
     def __init__(self) -> None:
@@ -450,15 +603,23 @@ class Generator:
 
     @classmethod
     def get(cls) -> "Generator":
+        """Return the shared Generator instance, creating it on first call."""
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
 
     def _load_model(self):
+        """Load Qwen2.5-3B-Instruct with hardware-appropriate precision.
+
+        Returns:
+            Tuple of (device_str, model, tokenizer).
+        """
         model_id = settings.generation_model_id
         tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
 
         if torch.cuda.is_available() and settings.load_in_4bit:
+            # CUDA 환경: bitsandbytes NF4 4-bit 양자화로 VRAM ~2GB 절감
+            # double_quant=True → 양자화 상수 자체를 재양자화 (추가 메모리 절감)
             from transformers import BitsAndBytesConfig
             bnb_config = BitsAndBytesConfig(
                 load_in_4bit=True,
@@ -469,42 +630,49 @@ class Generator:
             model = AutoModelForCausalLM.from_pretrained(
                 model_id,
                 quantization_config=bnb_config,
-                device_map="auto",
+                device_map="auto",  # 멀티 GPU 자동 분산
                 trust_remote_code=True,
             )
             device = "cuda"
         elif torch.backends.mps.is_available():
+            # Apple Silicon (M1/M2/M3): Metal GPU 사용, float16으로 로드
+            # Bug fix: `dtype=` → `torch_dtype=` (from_pretrained 공식 파라미터명)
+            # `dtype=`는 silently ignore → float32로 로드되어 메모리 2배 낭비
             model = AutoModelForCausalLM.from_pretrained(
                 model_id,
-                dtype=torch.float16,
+                torch_dtype=torch.float16,
                 trust_remote_code=True,
             ).to("mps")
             device = "mps"
         else:
+            # CPU fallback: float32 (정밀도 최대, 속도 최저)
             model = AutoModelForCausalLM.from_pretrained(
                 model_id,
-                dtype=torch.float32,
+                torch_dtype=torch.float32,
                 trust_remote_code=True,
             )
             device = "cpu"
 
-        model.eval()
+        model.eval()  # 추론 모드: dropout 비활성화, BN 통계 고정
         return device, model, tokenizer
 
     def generate(
         self,
         query: str,
         retrieved: List[Tuple[dict, float]],
-    ) -> Tuple[str, List[Citation]]:
+    ) -> Tuple[str, List[Citation], str]:
         """
         Retrieved 청크를 컨텍스트로 답변 생성 + Citation Validator 실행.
 
         Returns:
-            (answer: str, citations: List[Citation])
-            관련 정보 없으면 FALLBACK_ANSWER + 빈 citations 반환.
+            Tuple of ``(answer, citations, answer_pre_scrub)``:
+            - answer: P16 injection + P13 scrubbing 완료된 최종 답변
+            - citations: 검증된 Citation 목록
+            - answer_pre_scrub: P13 스크러빙 이전 답변 (P12/P13 경고 계산에 사용)
+            관련 정보 없으면 ``(FALLBACK_ANSWER, [], "")`` 반환.
         """
         if not retrieved:
-            return FALLBACK_ANSWER, []
+            return FALLBACK_ANSWER, [], ""
 
         context = _build_context_block(retrieved)
         user_message = (
@@ -556,24 +724,36 @@ class Generator:
         answer = self._tokenizer.decode(generated, skip_special_tokens=True).strip()
 
         if not answer or _is_fallback(answer):
-            return FALLBACK_ANSWER, []
+            return FALLBACK_ANSWER, [], ""
 
+        # ── Post-processing Pipeline ────────────────────────────────────────
+        # Step 1 (P16): citation 없는 문장에 word-overlap 기반 citation 삽입
         answer = _inject_citations_post_hoc(answer, retrieved)
+        # P12/P13 경고는 스크러빙 이전 답변에 적용해야 함
+        # 스크러빙 후에는 숫자가 [?]로 치환되어 _METRIC_NUM_RE가 매치 불가 → 경고 항상 0
+        answer_pre_scrub = answer
+        # Step 2 (P13 Tier-2): context에 없는 숫자를 [?]로 스크러빙
         answer = _scrub_hallucinated_numerics(answer, retrieved)
+        # ───────────────────────────────────────────────────────────────────
 
+        # 전체 retrieved 청크에서 후보 citation 목록 구성 (score >= citation_min_score)
         all_citations = _build_citations(retrieved)
 
+        # 답변 텍스트에서 실제로 인용된 파일명 집합 추출
         cited_sources = _extract_cited_sources(answer)
         if cited_sources:
+            # [Source: ...] 태그가 있으면 해당 파일만 유지 (pruning)
             pruned = [c for c in all_citations if c.source_filename in cited_sources]
             citations = pruned if pruned else all_citations
         else:
+            # 태그가 없으면 paper_title 키워드 매칭으로 fallback
             by_title = _match_citations_by_title(answer, all_citations)
             citations = by_title if by_title else all_citations
 
+        # P11: 답변 키워드와 청크 키워드 교집합이 적은 citation 제거
         citations = _filter_by_contribution(answer, citations, retrieved)
 
-        return answer, citations
+        return answer, citations, answer_pre_scrub
 
     def suggest_queries(self, chunks: List[str]) -> List[str]:
         """
@@ -622,7 +802,9 @@ class Generator:
         raw = self._tokenizer.decode(generated, skip_special_tokens=True).strip()
 
         try:
-            match = re.search(r'\[.*?\]', raw, re.DOTALL)
+            # greedy 매치: non-greedy(.*?)는 [MASK], [CLS] 등 NLP 토큰이 포함된 경우
+            # 첫 번째 ] 에서 끊겨 파싱 실패 → greedy(.*)로 마지막 ] 까지 매치
+            match = re.search(r'\[.*\]', raw, re.DOTALL)
             if match:
                 questions = json.loads(match.group())
                 if isinstance(questions, list):

@@ -1,0 +1,643 @@
+{
+  "timestamp": "20260407_205111",
+  "mode": "basic",
+  "elapsed_seconds": 255.5,
+  "summary_metrics": {
+    "num_questions": 18,
+    "no_context_rate": 0.0,
+    "retrieval_score_avg": 0.8185,
+    "citation_rate_avg": 0.2608,
+    "chunk_overlap_ratio_avg": 0.6753,
+    "answer_length_avg_words": 101.4,
+    "total_warnings": 4,
+    "warnings_per_query": 0.22
+  },
+  "per_category_metrics": {
+    "3d_vision": {
+      "num_questions": 1,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8451,
+      "citation_rate_avg": 0.2857,
+      "chunk_overlap_ratio_avg": 0.6923,
+      "answer_length_avg_words": 58.0,
+      "total_warnings": 0,
+      "warnings_per_query": 0.0
+    },
+    "efficient_ft": {
+      "num_questions": 1,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.7746,
+      "citation_rate_avg": 0.25,
+      "chunk_overlap_ratio_avg": 0.75,
+      "answer_length_avg_words": 86.0,
+      "total_warnings": 1,
+      "warnings_per_query": 1.0
+    },
+    "efficient_inference": {
+      "num_questions": 1,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8511,
+      "citation_rate_avg": 0.3333,
+      "chunk_overlap_ratio_avg": 0.78,
+      "answer_length_avg_words": 104.0,
+      "total_warnings": 0,
+      "warnings_per_query": 0.0
+    },
+    "foundation": {
+      "num_questions": 2,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8416,
+      "citation_rate_avg": 0.2614,
+      "chunk_overlap_ratio_avg": 0.5794,
+      "answer_length_avg_words": 88.5,
+      "total_warnings": 0,
+      "warnings_per_query": 0.0
+    },
+    "multimodal": {
+      "num_questions": 2,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8042,
+      "citation_rate_avg": 0.2348,
+      "chunk_overlap_ratio_avg": 0.7925,
+      "answer_length_avg_words": 100.5,
+      "total_warnings": 1,
+      "warnings_per_query": 0.5
+    },
+    "on_device": {
+      "num_questions": 1,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8919,
+      "citation_rate_avg": 0.2857,
+      "chunk_overlap_ratio_avg": 0.6119,
+      "answer_length_avg_words": 147.0,
+      "total_warnings": 0,
+      "warnings_per_query": 0.0
+    },
+    "rag": {
+      "num_questions": 3,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.7743,
+      "citation_rate_avg": 0.2409,
+      "chunk_overlap_ratio_avg": 0.6282,
+      "answer_length_avg_words": 94.0,
+      "total_warnings": 1,
+      "warnings_per_query": 0.33
+    },
+    "rag_2024": {
+      "num_questions": 1,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.7335,
+      "citation_rate_avg": 0.3,
+      "chunk_overlap_ratio_avg": 0.5714,
+      "answer_length_avg_words": 110.0,
+      "total_warnings": 1,
+      "warnings_per_query": 1.0
+    },
+    "reasoning": {
+      "num_questions": 2,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8662,
+      "citation_rate_avg": 0.2716,
+      "chunk_overlap_ratio_avg": 0.6833,
+      "answer_length_avg_words": 150.0,
+      "total_warnings": 0,
+      "warnings_per_query": 0.0
+    },
+    "safety": {
+      "num_questions": 1,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8043,
+      "citation_rate_avg": 0.2857,
+      "chunk_overlap_ratio_avg": 0.7333,
+      "answer_length_avg_words": 56.0,
+      "total_warnings": 0,
+      "warnings_per_query": 0.0
+    },
+    "vla": {
+      "num_questions": 3,
+      "no_context_rate": 0.0,
+      "retrieval_score_avg": 0.8286,
+      "citation_rate_avg": 0.2317,
+      "chunk_overlap_ratio_avg": 0.6741,
+      "answer_length_avg_words": 101.7,
+      "total_warnings": 0,
+      "warnings_per_query": 0.0
+    }
+  },
+  "raw_results": [
+    {
+      "question": "What are the two pre-training objectives used in BERT?",
+      "category": "foundation",
+      "ground_truth": "BERT uses masked language modeling (MLM) and next sentence prediction (NSP) as its two pre-training objectives.",
+      "answer": "BERT uses two pre-training objectives: masked language modeling (MLM) and next sentence prediction (NSP). [Source: RoBERTa.pdf | Section: 2.2 Architecture | p.2] [Source: RoBERTa.pdf | Section: 7 Conclusion | p.10] MLM involves selecting a random sample of tokens in the input sequence and replacing them with the special token [MASK], then predicting the masked tokens using a cross-entropy loss. NSP aims to predict whether a given pair of sentences forms a coherent paragraph, where the first sentence is taken from the same document and the second from another document. [Source: RoBERTa.pdf | Section: 2.3 Training Objectives | p.2]",
+      "citations": [
+        {
+          "source_filename": "RoBERTa.pdf",
+          "paper_title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+          "arxiv_id": "1907.11692",
+          "section_header": "7 Conclusion",
+          "page_number": 10,
+          "score": 0.847
+        }
+      ],
+      "retrieved_chunks": [
+        "7\nConclusion\nWe carefully evaluate a number of design de-\ncisions when pretraining BERT models.\nWe\nﬁnd that performance can be substantially im-\nproved by training the model longer, with bigger\nbatches over more data; removing the next sen-\ntence prediction objective; training on longer se-\nquences; and dynamically changing the masking\npattern applied to the training data. Our improved\npretraining procedure, which we call RoBERTa,\nachieves state-of-the-art results on GLUE, RACE\nand SQuAD, without multi-task ﬁnetuning for\nGLUE or additional data for SQuAD. These re-\nsults illustrate the importance of these previ-\nously overlooked design decisions and suggest\nthat BERT’s pretraining objective remains com-\npetitive with recently proposed alternatives.\nWe\nadditionally\nuse\na\nnovel\ndataset,\nCC-NEWS,\nand\nrelease\nour\nmodels\nand\ncode\nfor\npretraining\nand\nﬁnetuning\nat:\nhttps://github.com/pytorch/fairseq.\nReferences\nEneko Agirre, Llu’is M‘arquez, and Richard Wicen-\ntowski, editors. 2007.\nProceedings of the Fourth",
+        "to BERT with special tokens delimiting them:\n[CLS], x1, . . . , xN, [SEP], y1, . . . , yM, [EOS].\nM and N are constrained such that M + N < T,\nwhere T is a parameter that controls the maximum\nsequence length during training.\nThe model is ﬁrst pretrained on a large unla-\nbeled text corpus and subsequently ﬁnetuned us-\ning end-task labeled data.\n2.2\nArchitecture\nBERT uses the now ubiquitous transformer archi-\ntecture (Vaswani et al., 2017), which we will not\nreview in detail. We use a transformer architecture\nwith L layers. Each block uses A self-attention\nheads and hidden dimension H.\n2.3\nTraining Objectives\nDuring pretraining, BERT uses two objectives:\nmasked language modeling and next sentence pre-\ndiction.\nMasked Language Model (MLM)\nA random\nsample of the tokens in the input sequence is\nselected and replaced with the special token\n[MASK]. The MLM objective is a cross-entropy\nloss on predicting the masked tokens. BERT uni-\nformly selects 15% of the input tokens for possi-",
+        "alternatives that lead to better downstream task\nperformance; (2) We use a novel dataset, CC-\nNEWS, and conﬁrm that using more data for pre-\ntraining further improves performance on down-\nstream tasks; (3) Our training improvements show\nthat masked language model pretraining, under\nthe right design choices, is competitive with all\nother recently published methods. We release our\nmodel, pretraining and ﬁne-tuning code imple-\nmented in PyTorch (Paszke et al., 2017).\n2\nBackground\nIn this section, we give a brief overview of the\nBERT (Devlin et al., 2019) pretraining approach\nand some of the training choices that we will ex-\namine experimentally in the following section.\n2.1\nSetup\nBERT takes as input a concatenation of two\nsegments\n(sequences\nof\ntokens),\nx1, . . . , xN\nand y1, . . . , yM.\nSegments usually consist of\nmore than one natural sentence.\nThe two seg-\nments are presented as a single input sequence\nto BERT with special tokens delimiting them:\n[CLS], x1, . . . , xN, [SEP], y1, . . . , yM, [EOS].",
+        "next-sentence prediction objective proposed in the original BERT does not necessarily lead to an\nimprovement in our setting. Hence, we exclude the next-sentence prediction objective from XLNet.\nFinally, we also perform a qualitative study of the attention patterns, which is included in Appendix\nA.6 due to page limit.\n4\nConclusions\nXLNet is a generalized AR pretraining method that uses a permutation language modeling objective\nto combine the advantages of AR and AE methods. The neural architecture of XLNet is developed to\nwork seamlessly with the AR objective, including integrating Transformer-XL and the careful design\nof the two-stream attention mechanism. XLNet achieves substantial improvement over previous\npretraining objectives on various tasks.\nAcknowledgments\nThe authors would like to thank Qizhe Xie and Adams Wei Yu for providing useful feedback on the\nproject, Jamie Callan for providing the ClueWeb dataset, Youlong Cheng, Yanping Huang and Shibo",
+        "contextual information on both sides. As a result, the BERT objective allows the model to be\npretrained to better capture bidirectional context.\n2.2\nObjective: Permutation Language Modeling\nAccording to the comparison above, AR language modeling and BERT possess their unique advan-\ntages over the other. A natural question to ask is whether there exists a pretraining objective that\nbrings the advantages of both while avoiding their weaknesses.\nBorrowing ideas from orderless NADE [32], we propose the permutation language modeling objective\nthat not only retains the beneﬁts of AR models but also allows models to capture bidirectional\ncontexts. Speciﬁcally, for a sequence x of length T, there are T! different orders to perform a valid\nautoregressive factorization. Intuitively, if model parameters are shared across all factorization orders,\nin expectation, the model will learn to gather information from all positions on both sides."
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "How does the Transformer's self-attention mechanism compute attention scores?",
+      "category": "foundation",
+      "ground_truth": "Self-attention computes attention scores using dot products of query and key vectors, scaled by the square root of the key dimension, then applies softmax to get weights over value vectors.",
+      "answer": "The Transformer's self-attention mechanism computes attention scores as follows:\nAttention(Q, K, V) = softmax(QKT / √dk)V (1)\nwhere Q, K, and V are the query, key, and value vectors respectively, and dk is the dimensionality of the key and value vectors [Source: Attention_Is_All_You_Need.pdf | Section: 2 Background | p.2 | score: 0.823]. This computation involves matrix multiplication of the query and key vectors, which is computationally expensive, especially for longer sequences. [Source: Longformer.pdf | Section: 3.2 Implementation | p.4]",
+      "citations": [
+        {
+          "source_filename": "Longformer.pdf",
+          "paper_title": "Longformer: The Long-Document Transformer",
+          "arxiv_id": "2004.05150",
+          "section_header": "3.2 Implementation",
+          "page_number": 4,
+          "score": 0.8497
+        },
+        {
+          "source_filename": "Attention_Is_All_You_Need.pdf",
+          "paper_title": "Attention Is All You Need",
+          "arxiv_id": "1706.03762",
+          "section_header": "2 Background",
+          "page_number": 2,
+          "score": 0.8228
+        }
+      ],
+      "retrieved_chunks": [
+        "Transformer model (Vaswani et al., 2017) computes\nattention scores as follows:\nAttention(Q, K, V ) = softmax\n\u0012QKT\n√dk\n\u0013\nV (1)\nWe use two sets of projections, Qs, Ks, Vs to com-\npute attention scores of sliding window attention,\nand Qg, Kg, Vg to compute attention scores for the\nglobal attention. The additional projections provide\nﬂexibility to model the different types of attention,\nwhich we show is critical for best performance on\ndownstream tasks. Qg, Kg, Vg are all initialized\nwith values that match Qs, Ks, Vs.\n3.2\nImplementation\nIn regular transformers, attention scores are com-\nputed as in Eqn. 1. The expensive operation is\nthe matrix multiplication QKT because both Q\nand K have n (sequence length) projections. For\nLongformer, the dilated sliding window attention\ncomputes only a ﬁxed number of the diagonals of\nQKT . As shown in Fig. 1, this results in a linear\nincrease in memory usage compared to quadratic\nincrease for full self-attention. However, imple-\nmenting it requires a form of banded matrix mul-",
+        "Acknowledgments\nThis work is supported by the Shanghai AI Laboratory.\nReferences\nKrzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane, Tamas Sarlos,\nPeter Hawkins, Jared Davis, Afroz Mohiuddin, Lukasz Kaiser, David Belanger, Lucy Colwell, and Adrian\nWeller. Rethinking attention with performers, 2022.\nTri Dao. Flashattention-2: Faster attention with better parallelism and work partitioning. arXiv preprint\narXiv:2307.08691, 2023.\nTri Dao and Albert Gu. Transformers are ssms: Generalized models and efficient algorithms through\nstructured state space duality. arXiv preprint arXiv:2405.21060, 2024.\nTri Dao, Dan Fu, Stefano Ermon, Atri Rudra, and Christopher Ré. Flashattention: Fast and memory-efficient\nexact attention with io-awareness. Advances in Neural Information Processing Systems, 35:16344–16359,\n2022.\nFairScale authors. Fairscale: A general purpose modular pytorch library for high performance and large scale\ntraining. https://github.com/facebookresearch/fairscale, 2021.",
+        "to averaging attention-weighted positions, an effect we counteract with Multi-Head Attention as\ndescribed in section 3.2.\nSelf-attention, sometimes called intra-attention is an attention mechanism relating different positions\nof a single sequence in order to compute a representation of the sequence. Self-attention has been\nused successfully in a variety of tasks including reading comprehension, abstractive summarization,\ntextual entailment and learning task-independent sentence representations [4, 27, 28, 22].\nEnd-to-end memory networks are based on a recurrent attention mechanism instead of sequence-\naligned recurrence and have been shown to perform well on simple-language question answering and\nlanguage modeling tasks [34].\nTo the best of our knowledge, however, the Transformer is the first transduction model relying\nentirely on self-attention to compute representations of its input and output without using sequence-",
+        "showed that the full transformer is Turing Complete (i.e. can simulate a full Turing machine). Two\nnatural questions arise: Can we achieve the empirical beneﬁts of a fully quadratic self-attention\nscheme using fewer inner-products? Do these sparse attention mechanisms preserve the expressivity\nand ﬂexibility of the original network?\nIn this paper, we address both the above questions and produce a sparse attention mechanism that\nimproves performance on a multitude of tasks that require long contexts. We systematically develop\nBIGBIRD, an attention mechanism whose complexity is linear in the number of tokens (Sec. 2). We\ntake inspiration from graph sparsiﬁcation methods and understand where the proof for expressiveness\nof Transformers breaks down when full-attention is relaxed to form the proposed attention pattern.\nThis understanding helped us develop BIGBIRD, which is theoretically as expressive and also\nempirically useful. In particular, our BIGBIRD consists of three main part:",
+        "attention mechanisms in the model. Recall that the self-attention operation in a Transformer\ntakes a sequence as input and outputs a new sequence of the same length. Each entry of\nthe output sequence is produced by computing a weighted average of entries of the input\nsequence. Specifically, let yi refer to the ith element of the output sequence and xj refer to\nthe jth entry of the input sequence. yi is computed as P\nj wi,jxj, where wi,j is the scalar\nweight produced by the self-attention mechanism as a function of xi and xj. The attention\nmask is then used to zero out certain weights in order to constrain which entries of the input\ncan be attended to at a given output timestep. Diagrams of the masks we will consider are\nshown in Figure 3. For example, the causal mask (Figure 3, middle) sets any wi,j to zero if\nj > i.\nThe first model structure we consider is an an encoder-decoder Transformer, which\nconsists of two layer stacks: The encoder, which is fed an input sequence, and the decoder,"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What is the key difference between LoRA and full fine-tuning?",
+      "category": "efficient_ft",
+      "ground_truth": "LoRA freezes the pretrained model weights and injects trainable low-rank decomposition matrices into each layer, significantly reducing the number of trainable parameters compared to full fine-tuning.",
+      "answer": "As reported in the provided documents, LoRA saves much trainable parameters and memory cost compared to full fine-tuning [Source: LongLoRA.pdf | Section: 3.3 IMPROVED LORA FOR LONG CONTEXT | p.5]. Empirically, the authors observe an obvious gap between LoRA and full fine-tuning as the target context length increases [Source: LongLoRA.pdf | Section: 3.3 IMPROVED LORA FOR LONG CONTEXT | p.5]. At the time of publication, LoRA with larger ranks could not reduce this gap [Source: LongLoRA.pdf | Section: 3.3 IMPROVED LORA FOR LONG CONTEXT | p.5].",
+      "citations": [
+        {
+          "source_filename": "LongLoRA.pdf",
+          "paper_title": "L L RA: E F - L - C L L M",
+          "arxiv_id": "2309.12307",
+          "section_header": "3.3 IMPROVED LORA FOR LONG CONTEXT",
+          "page_number": 5,
+          "score": 0.7746
+        }
+      ],
+      "retrieved_chunks": [
+        "fine-tuning. Shifting prevents models from being over-fitted to specific attention patterns.\nEasy Implementation.\nS2-Attn is easy to implement. It involves only two steps: (1) shifting tokens\nin half attention heads, and (2) transposing features from token dimension to batch dimension. Two\nlines of code are enough. We provide a PyTorch-style code in Algorithm 1.\n3.3\nIMPROVED LORA FOR LONG CONTEXT\nLoRA (Hu et al., 2022) is an efficient and popular manner for adapting LLMs to other datasets. It\nsaves much trainable parameters and memory cost, compared to full fine-tuning. However, adapting\nLLMs from short context length to long is not easy. We empirically observe an obvious gap between\nLoRA and full fine-tuning. As shown in Table 2, the gap between LoRA and full fine-tuning grows\nas the target context length becomes larger. And LoRA with larger ranks cannot reduce the gap.\n5",
+        "In addition, we further conduct supervised fine-tuning with LongLoRA and our\nlong instruction-following LongAlpaca dataset. All our code, models, dataset, and\ndemo are available at github.com/dvlab-research/LongLoRA.\n2.66\n2.52\n2.48\n2.78\n2.94\n2.98\n3.73\n2.4\n2.9\n3.4\n3.9\n8192\n16364\n32768\n65536\nPerplexity\n46.3\n57.4\n68.8\n25.6\n34.6\n46.3\n69.8\n20\n40\n60\n80\n8192\n16364\n32768\n65536\nGPU memory\nFull FT\nLoRA\nLongLoRA\n7.4\n16.3\n39.8\n5.2\n11.3\n24.6\n52.4\n0\n30\n60\n90\n8192\n16364\n32768\n65536\nTraining hours\nContext\nhours\nGB\nContext\nContext\nOOM\nOOM\n92.5\nFigure 1: LongLoRA closes the accuracy gap that between conventional LoRA and full fine-tuning,\nwhile still maintaining up to 1.8× lower memory cost than full fine-tuning. Furthermore, LongLoRA\nimproves the training speed of LoRA by up to 1.8× with S2-Attn. Llama2-7B are fine-tuned to\nvarious context lengths with Flash-Attention2 (Dao, 2023) and DeepSpeed (Rasley et al., 2020) stage\n2 and evaluated on the proof-pile (Azerbayev et al., 2022) test set in perplexity.\n1\nINTRODUCTION",
+        "accuracy is a promising area for future research.\n8. Conclusion\nIn this paper, we introduce a pioneering learning\nparadigm, termed non-fine-tunable learning, aimed at pre-\nventing pre-trained models from being fine-tuned for re-\nstricted tasks. We present the problem formulation, design\nand evaluation of SOPHON, a framework designed to achieve\nnon-fine-tunable learning, including an effective algorithm\nto resist fine-tuning and novel loss functions for training\nstability. Our experiments have validated the efficacy of\nSOPHON in resisting fine-tuning across various fine-tuning\nsettings.\nAcknowledgments\nWe sincerely thank our Shepherd and all the anonymous\nreviewers for their valuable comments. This work is sup-\nported by China NSFC Grant 61925109 and Ant Group.\nYanjiao Chen is the corresponding author.",
+        "for optimization.\n4.1.1. Fine-Tuning Simulation. We denote a fine-tuning\nenvironment as a triplet (ϕi, Ri, Ti), where ϕi(·) ∼Φ\nis a fine-tuning strategy, Ri is the dataset used to fine-\ntune model fθ, and Ti is the dataset used to evaluate the\nperformance of model f k\nϑ after the k-th round of fine-tuning.\nBoth Ri and Ti are sampled from the restricted domain.\nAt the k-th round, the fine-tuning process is essentially\nan optimization problem.\nmax\nϑ\nEx∼Ri L\n\u0000f k\nϑ\n\u0000x|ϕi, f k−1\nϑ\n\u0001\u0001\n,\n(3)\nwhere f k\nϑ is the fine-tuned version of f k−1\nϑ\n. Note that f 0\nϑ =\nfθ.\nThe fine-tuning process may not converge, i.e., K →∞,\nwhere K is the total number of fine-tuning rounds. Thus,\nwe set an upper-bound on K as a relatively large integer\nto approximate the point of convergence, e.g., 50 in our\nexperiments.\nWe consider the strongest adversary with the (poten-\ntially) best fine-tuning strategy to try to obtain a good\nperformance in the restricted domain. Therefore, we materi-",
+        "Attention. LoRA+: improved LoRA. We fine-tune Llama2 (Touvron et al., 2023b) in 7B and 13B\nmodel sizes on the RedPajama (Computer, 2023) dataset under 8k-32k context lengths. We show\nthat our method achieves comparable performance to the full attention or full FT baselines, with\nbetter efficiency. We use the same training setting as the model evaluated on PG19 (Rae et al., 2020)\nintroduced in Section B.1 in the appendix.\nSize\nTraining\nContext Length\nLongLoRA\nEvaluation Context Length\nS2-Attn\nLoRA+\n2048\n4096\n8192\n16384\n32768\n7B\n8192\n3.14\n2.85\n2.66\n-\n-\n✓\n3.15\n2.86\n2.68\n-\n-\n✓\n✓\n3.20\n2.91\n2.72\n-\n-\n16384\n✓\n3.17\n2.87\n2.68\n2.55\n-\n✓\n✓\n3.17\n2.87\n2.66\n2.51\n-\n32768\n✓\n3.20\n2.90\n2.69\n2.54\n2.49\n✓\n✓\n3.35\n3.01\n2.78\n2.61\n2.50\n13B\n8192\n2.96\n2.69\n2.53\n-\n-\n✓\n3.01\n2.74\n2.57\n-\n-\n✓\n✓\n3.04\n2.77\n2.60\n-\n-\n16384\n✓\n2.99\n2.72\n2.53\n2.40\n-\n✓\n✓\n3.03\n2.74\n2.55\n2.41\n-\n32768\n✓\n3.04\n2.75\n2.56\n2.42\n2.33\n✓\n✓\n3.05\n2.76\n2.57\n2.42\n2.32\nTo bridge this gap, we open embedding and normalization layers for training. As shown in Table 2,"
+      ],
+      "warnings": [
+        "Comparison query detected: no source related to 'full' retrieved"
+      ],
+      "status": "partial"
+    },
+    {
+      "question": "How does FlashAttention reduce memory usage compared to standard attention?",
+      "category": "efficient_inference",
+      "ground_truth": "FlashAttention uses tiling and recomputation to avoid materializing the full attention matrix in GPU HBM, reducing memory from O(N^2) to O(N) while maintaining exact attention computation.",
+      "answer": "FlashAttention reduces memory usage linearly instead of quadratically, compared to standard attention, which increases memory usage quadratically with sequence length [Source: FlashAttention_2.pdf | Section: 2 Background | p.2]. This is achieved by exploiting the asymmetric GPU memory hierarchy and reducing communication and shared memory reads/writes [Source: FlashAttention_2.pdf | Section: Faster Attention with Better Parallelism and Work Partitioning | p.1]. Specifically, benchmarks show that FlashAttention-2 achieves around 2× speedup over FlashAttention, reaching up to 73% of the theoretical maximum throughput in the forward pass, indicating a significant reduction in memory usage [Source: FlashAttention_2.pdf | Section: Faster Attention with Better Parallelism and Work Partitioning | p.1].",
+      "citations": [
+        {
+          "source_filename": "FlashAttention_2.pdf",
+          "paper_title": "FlashAttention-2 : Faster Attention with Better Parallelism and Work Partitioning",
+          "arxiv_id": "2307.08691",
+          "section_header": "Faster  Attention  with  Better  Parallelism  and  Work  Partitioning",
+          "page_number": 1,
+          "score": 0.8511
+        }
+      ],
+      "retrieved_chunks": [
+        "FlashAttention-2:\nFaster Attention with Better Parallelism and Work Partitioning\nTri Dao1,2\n1Department of Computer Science, Princeton University\n2Department of Computer Science, Stanford University\ntrid@cs.stanford.edu\nJuly 18, 2023\nAbstract\nScaling Transformers to longer sequence lengths has been a major problem in the last several years,\npromising to improve performance in language modeling and high-resolution image understanding, as\nwell as to unlock new applications in code, audio, and video generation. The attention layer is the\nmain bottleneck in scaling to longer sequences, as its runtime and memory increase quadratically in\nthe sequence length. FlashAttention [5] exploits the asymmetric GPU memory hierarchy to bring\nsignificant memory saving (linear instead of quadratic) and runtime speedup (2-4× compared to optimized\nbaselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized",
+        "3. Even within one block of attention computation, we partition the work between different warps of a\nthread block to reduce communication and shared memory reads/writes.\nIn Section 4, we empirically validate that FlashAttention-2 yields significant speedup compared to\neven FlashAttention. Benchmarks on different settings (with or without causal mask, different head\ndimensions) show that FlashAttention-2 achieves around 2× speedup over FlashAttention, reaching\nup to 73% of the theoretical max throughput in the forward pass, and up to 63% of the theoretical max\nthroughput in the backward pass. When used end-to-end to train GPT-style models, we reach training speed\nof up to 225 TFLOPs/s per A100 GPU.\n2\nBackground\nWe provide some background on the performance characteristics and execution model of GPUs. We also\ndescribe the standard implementation of attention, as well as FlashAttention.\n2.1\nHardware characteristics",
+        "baselines), with no approximation. However, FlashAttention is still not nearly as fast as optimized\nmatrix-multiply (GEMM) operations, reaching only 25-40% of the theoretical maximum FLOPs/s. We\nobserve that the inefficiency is due to suboptimal work partitioning between different thread blocks and\nwarps on the GPU, causing either low-occupancy or unnecessary shared memory reads/writes. We propose\nFlashAttention-2, with better work partitioning to address these issues. In particular, we (1) tweak\nthe algorithm to reduce the number of non-matmul FLOPs (2) parallelize the attention computation, even\nfor a single head, across different thread blocks to increase occupancy, and (3) within each thread block,\ndistribute the work between warps to reduce communication through shared memory. These yield around\n2× speedup compared to FlashAttention, reaching 50-73% of the theoretical maximum FLOPs/s on\nA100 and getting close to the efficiency of GEMM operations. We empirically validate that when used",
+        "instead of Vanilla Attention is used. And the training speeds for both of them are similar. Therefore, we\ndecided to use Vanilla Attention instead of Window Attention for the Vision Transformer when training\nQwen-VL.\n22",
+        "use patterns 1 and 2 in each half self-attention heads respectively. This manner does not increase\nadditional computation costs but enables the information flow between different groups. We show\nthat it gets close to the standard attention baseline in Table 1.\nConsistency to Full Attention.\nExisting efficient attention designs can also improve the efficiency\nof long-context LLMs. However, most of them are not suitable for long-context fine-tuning. Because,\nthese transformers (Qiu et al., 2020; Child et al., 2019), designed for training from scratch, have gaps\nto the standard full attention, which is used in pre-training. In Table 6, we show that S2-Attn not\nonly enables efficient fine-tuning but also supports full attention testing. Although other attentions\ncan also be used in long context fine-tuning, models must be tested with the attention used during\nfine-tuning. Shifting prevents models from being over-fitted to specific attention patterns.\nEasy Implementation."
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What is the main contribution of the RAG paper by Lewis et al.?",
+      "category": "rag",
+      "ground_truth": "RAG combines parametric memory (a pre-trained seq2seq model) with non-parametric memory (a dense vector index of Wikipedia) for knowledge-intensive NLP tasks.",
+      "answer": "The main contribution of the RAG paper by Lewis et al. (2020) is to enhance the input questions of generative language models with retrieved documents, thereby improving their performance in various tasks, especially in knowledge-intensive domains [Source: RAG_Lewis_et_al.pdf | Section: Acknowledgments | p.10 | score: 0.711]. At the time of publication, it was noted that RAG enhances factualness and control in generated responses [Source: RAG_Lewis_et_al.pdf | Section: Acknowledgments | p.10 | score: 0.711]. However, the exact quantitative improvements or benchmarks achieved by RAG are not reported in the provided documents.",
+      "citations": [
+        {
+          "source_filename": "RAG_Lewis_et_al.pdf",
+          "paper_title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+          "arxiv_id": "2005.11401",
+          "section_header": "Acknowledgments",
+          "page_number": 10,
+          "score": 0.7114
+        }
+      ],
+      "retrieved_chunks": [
+        "most practical applications.\nRetrieval-Augmented Generation\nRAG (Lewis\net al., 2020; Guu et al., 2020) is regarded as a\nuseful method to address the issues above, which\nenhances the input questions of generative LMs\nwith retrieved documents. It usually provides an\nextra knowledge source from a specific corpus,\ni.e., Wikipedia, which greatly improves the per-\nformance of LMs in a variety of tasks, especially\nin the knowledge-intensive ones. The proposed",
+        "• In this survey, we present a thorough and systematic\nreview of the state-of-the-art RAG methods, delineating\nits evolution through paradigms including naive RAG,\narXiv:2312.10997v5  [cs.CL]  27 Mar 2024",
+        "Broader Impact\nThis work offers several positive societal beneﬁts over previous work: the fact that it is more\nstrongly grounded in real factual knowledge (in this case Wikipedia) makes it “hallucinate” less\nwith generations that are more factual, and offers more control and interpretability. RAG could be\nemployed in a wide variety of scenarios with direct beneﬁt to society, for example by endowing it\nwith a medical index and asking it open-domain questions on that topic, or by helping people be more\neffective at their jobs.\nWith these advantages also come potential downsides: Wikipedia, or any potential external knowledge\nsource, will probably never be entirely factual and completely devoid of bias. Since RAG can be\nemployed as a language model, similar concerns as for GPT-2 [50] are valid here, although arguably\nto a lesser extent, including that it might be used to generate abuse, faked or misleading content in",
+        "the key factors.While scaling laws [174] are established for\nLLMs, their applicability to RAG remains uncertain. Initial\nstudies like RETRO++ [44] have begun to address this, yet the\nparameter count in RAG models still lags behind that of LLMs.\nThe possibility of an Inverse Scaling Law 10, where smaller\nmodels outperform larger ones, is particularly intriguing and\nmerits further investigation.\nE. Production-Ready RAG\nRAG’s practicality and alignment with engineering require-\nments have facilitated its adoption. However, enhancing re-\ntrieval efficiency, improving document recall in large knowl-\nedge bases, and ensuring data security—such as preventing\n10https://github.com/inverse-scaling/prize\ninadvertent disclosure of document sources or metadata by\nLLMs—are critical engineering challenges that remain to be\naddressed [175].\nThe development of the RAG ecosystem is greatly impacted\nby the progression of its technical stack. Key tools like\nLangChain and LLamaIndex have quickly gained popularity",
+        "Xie et al., 2023) and explore RAG as a means to re-\nduce hallucination and improve factuality in LLMs\n(e.g., Shi et al., 2023; Mallen et al., 2023; Zhang\net al., 2023b; Asai et al., 2023). However, in order\nfor RAG to be effective, LLMs need to correctly\ndetermine the relevance of external contexts and\nremain context-faithful when using the retrieved\nevidence. Our study highlights the critical signif-\nicance of basic language understanding skills for\nLLMs to generate truly text-grounded output."
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "How does Self-RAG differ from standard RAG in terms of retrieval strategy?",
+      "category": "rag",
+      "ground_truth": "Self-RAG trains the model to adaptively retrieve passages on-demand by generating special reflection tokens, rather than always retrieving at every generation step.",
+      "answer": "Self-RAG differs from standard RAG in that it evaluates the necessity of retrieval based on different scenarios, whereas standard RAG likely employs a fixed retrieval process. [Source: RAG_Survey_2024.pdf | Section: Retrieval-Augmented  Generation  for  Large | p.5] This flexibility allows Self-RAG to more easily integrate with other technologies such as fine-tuning or reinforcement learning, as discussed in Section 5.7 of the document [Source: Corrective_RAG.pdf | Section: 5.7 Consistent Supplementation of Web Search Knowledge | p.9].",
+      "citations": [
+        {
+          "source_filename": "Corrective_RAG.pdf",
+          "paper_title": "Corrective Retrieval Augmented Generation",
+          "arxiv_id": "2401.15884",
+          "section_header": "57.9 Table 5: Comparison results between CRAG, Self-",
+          "page_number": 9,
+          "score": 0.8751
+        },
+        {
+          "source_filename": "RAG_Survey_2024.pdf",
+          "paper_title": "Retrieval-Augmented Generation for Large Language Models: A Survey",
+          "arxiv_id": "2312.10997",
+          "section_header": "Retrieval-Augmented  Generation  for  Large",
+          "page_number": 5,
+          "score": 0.8506
+        }
+      ],
+      "retrieved_chunks": [
+        "24.9\n57.9\nTable 5: Comparison results between CRAG, Self-\nCRAG and RAG, Self-RAG with the same input in\nterms of accuracy.\nretrieval performance. A part of accurate retrieval\nresults were deliberately removed at random to\nimitate a low-quality retriever and evaluate how\nthe performance changed. Figure 3 demonstrated\nthe performance change of Self-RAG and Self-\nCRAG on the PopQA dataset.\nIt can be seen\nthat the generation performance of Self-RAG and\nSelf-CRAG dropped as the retrieval performance\ndropped, indicating that the generator relied heavily\non the quality of the retriever. Furthermore, as\nthe retrieval performance dropped, the generation\nperformance of Self-CRAG dropped more slightly\nthan that of Self-RAG. These results imply the\nsuperiority of Self-CRAG over Self-RAG on en-\nhancing the robustness to retrieval performance.\n5.7\nConsistent Supplementation of Web\nSearch Knowledge\nThis paper highlights the necessity of enhancing\nthe retrieved context by incorporating additional",
+        "FLARE [24] and Self-RAG [25]. This approach transcends\nthe fixed RAG retrieval process by evaluating the necessity\nof retrieval based on different scenarios. Another benefit of\na flexible architecture is that the RAG system can more\neasily integrate with other technologies (such as fine-tuning\nor reinforcement learning) [26]. For example, this can involve\nfine-tuning the retriever for better retrieval results, fine-tuning\nthe generator for more personalized outputs, or engaging in\ncollaborative fine-tuning [27].\nD. RAG vs Fine-tuning\nThe augmentation of LLMs has attracted considerable atten-\ntion due to their growing prevalence. Among the optimization\nmethods for LLMs, RAG is often compared with Fine-tuning\n(FT) and prompt engineering. Each method has distinct charac-\nteristics as illustrated in Figure 4. We used a quadrant chart to\nillustrate the differences among three methods in two dimen-\nsions: external knowledge requirements and model adaption",
+        "“Generation,” and “Augmentation.” On the other hand, current\nresearch tends to focus more on methods, lacking analysis and\nsummarization of how to evaluate RAG. This paper compre-\nhensively reviews the downstream tasks, datasets, benchmarks,\nand evaluation methods applicable to RAG. Overall, this\npaper sets out to meticulously compile and categorize the\nfoundational technical concepts, historical progression, and\nthe spectrum of RAG methodologies and applications that\nhave emerged post-LLMs. It is designed to equip readers and\nprofessionals with a detailed and structured understanding of\nboth large models and RAG. It aims to illuminate the evolution\nof retrieval augmentation techniques, assess the strengths and\nweaknesses of various approaches in their respective contexts,\nand speculate on upcoming trends and innovations.\nOur contributions are as follows:\n• In this survey, we present a thorough and systematic\nreview of the state-of-the-art RAG methods, delineating",
+        "effective RAG framework.\n• We have summarized the current assessment methods of\nRAG, covering 26 tasks, nearly 50 datasets, outlining\nthe evaluation objectives and metrics, as well as the\ncurrent evaluation benchmarks and tools. Additionally,\nwe anticipate future directions for RAG, emphasizing\npotential enhancements to tackle current challenges.\nThe paper unfolds as follows: Section II introduces the\nmain concept and current paradigms of RAG. The following\nthree sections explore core components—“Retrieval”, “Gen-\neration” and “Augmentation”, respectively. Section III focuses\non optimization methods in retrieval,including indexing, query\nand embedding optimization. Section IV concentrates on post-\nretrieval process and LLM fine-tuning in generation. Section V\nanalyzes the three augmentation processes. Section VI focuses\non RAG’s downstream tasks and evaluation system. Sec-\ntion VII mainly discusses the challenges that RAG currently\nfaces and its future development directions. At last, the paper",
+        "method is comparable to previous studies, since\nwe used the same retrieval results as previous\nwork. The difference lies in that our motivation\nis to improve the retrieval quality by correcting\nthe retrieval results that the system judges to\nbe of low quality.\nThis can be analogous to\nRAG’s augmentation to standalone parameterized\nlanguage models and we further augment RAG\nwith corrective strategies.\n5.2\nBaselines\nWe primarily compared CRAG with both ap-\nproaches with and without retrieval, where the\nlatter can be further split into standard RAG and\nlatest advanced RAG, including:\nBaselines without retrieval. We evaluated some\npublic LLMs, LLaMA2-7B,13B (Touvron et al.,\n2023b), instruction-tuned models, Alpaca-7B,13B\n(Dubois et al., 2023), and CoVE65B (Dhuliawala\net al., 2024) which introduces iterative engineering\n3In this study, Google Search API is utilized for searching."
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What problem does GraphRAG solve that naive RAG cannot handle well?",
+      "category": "rag",
+      "ground_truth": "GraphRAG addresses global queries that require synthesizing information across an entire corpus by building a knowledge graph and using community summaries for query-focused summarization.",
+      "answer": "GraphRAG addresses the limitation of naive RAG in handling iterative question answering, which characterizes sensemaking activity. [Source: GraphRAG.pdf | Section: — | p.10] While naive RAG may struggle with the complexity and depth required for continuous querying and summarization, GraphRAG offers a highly efficient method that retains advantages in comprehensiveness (72% win rate) and diversity (62% win rate) over vector RAG [Source: GraphRAG.pdf | Section: 2.2 Using Knowledge Graphs with LLMs and RAG | p.3]. GraphRAG's ability to generate and iteratively aggregate global summaries, combined with its use of hierarchical indexing, allows it to provide more comprehensive and diverse responses compared to naive RAG [Source: GraphRAG.pdf | Section: 2.2 Using Knowledge Graphs with LLMs and RAG | p.3].",
+      "citations": [
+        {
+          "source_filename": "GraphRAG.pdf",
+          "paper_title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+          "arxiv_id": "2404.16130",
+          "section_header": null,
+          "page_number": 10,
+          "score": 0.7486
+        }
+      ],
+      "retrieved_chunks": [
+        "fewer tokens. For a modest drop in performance compared with other global methods, root-level\nGraphRAG offers a highly efficient method for the iterative question answering that characterizes\nsensemaking activity, while retaining advantages in comprehensiveness (72% win rate) and diversity\n(62% win rate) over vector RAG.\n10",
+        "• In this survey, we present a thorough and systematic\nreview of the state-of-the-art RAG methods, delineating\nits evolution through paradigms including naive RAG,\narXiv:2312.10997v5  [cs.CL]  27 Mar 2024",
+        "GraphRAG builds upon prior work on advanced RAG strategies. GraphRAG leverages summaries\nover large sections of the data source as a form of ”self-memory” (described in Cheng et al. 2024),\nwhich are later used to answer queries as in Mao et al. 2020). These summaries are generated in\nparallel and iteratively aggregated into global summaries, similar to prior techniques (Feng et al.,\n2023; Gao et al., 2023; Khattab et al., 2022; Shao et al., 2023; Su et al., 2020; Trivedi et al., 2022;\nWang et al., 2024). In particular, GraphRAG is similar to other approaches that use hierarchical\nindexing to create summaries (similar to Kim et al. 2023; Sarthi et al. 2024). GraphRAG contrasts\nwith these approaches by generating a graph index from the source data, then applying graph-based\ncommunity detection to create a thematic partitioning of the data.\n2.2\nUsing Knowledge Graphs with LLMs and RAG\nApproaches to knowledge graph extraction from natural language text corpora include rule-",
+        "explicit techniques such as rewriting, decomposition, and disambiguation.\n• HyDE (Gao et al., 2022): This method utilizes the LLM to generate a hypothetical document based\non the input query. This generated document is then employed to retrieve relevant text chunks,\nwhich are subsequently used to formulate the final answer.\n• GraphRAG (Edge et al., 2024): This is a graph-enhanced RAG system that utilizes an LLM to\nextract entities and relationships from the text, representing them as nodes and edges. It generates\ncorresponding descriptions for these elements, aggregates nodes into communities, and produces a\ncommunity report to capture global information. When handling high-level queries, GraphRAG\nretrieves more comprehensive information by traversing these communities.\nImplementation and Evaluation Details. In our experiments, we utilize the nano vector database\nfor vector data management and access. For all LLM-based operations in LightRAG, we default",
+        "of the LLM-as-a-judge technique (Zheng et al., 2024) suitable for questions targeting broad issues\nand themes where there is no ground-truth answer. This approach first uses one LLM to generate\na diverse set of global sensemaking questions based on corpus-specific use cases, before using a\nsecond LLM to judge the answers of two different RAG systems using predefined criteria (defined\nin Section 3.3). We use this approach to compare GraphRAG to vector RAG on two representative\nreal-world text datasets. Results show GraphRAG strongly outperforms vector RAG when using\nGPT-4 as the LLM.\nGraphRAG is available as open-source software at https://github.com/microsoft/graphrag. In ad-\ndition, versions of the GraphRAG approach are also available as extensions to multiple open-\nsource libraries, including LangChain (LangChain, 2024), LlamaIndex (LlamaIndex, 2024), Nebu-\nlaGraph (NebulaGraph, 2024), and Neo4J (Neo4J, 2024).\n2\nBackground\n2.1\nRAG Approaches and Systems"
+      ],
+      "warnings": [
+        "GraphRAG.pdf: section_header missing"
+      ],
+      "status": "partial"
+    },
+    {
+      "question": "What is the key innovation of RT-2 compared to RT-1?",
+      "category": "vla",
+      "ground_truth": "RT-2 uses a vision-language model pretrained on web data as its backbone and co-fine-tunes it on robot trajectory data, enabling emergent capabilities like reasoning and generalization to new tasks.",
+      "answer": "RT-2 introduces a larger model size, specifically the 55B parameter RT-2-PaLI-X-55B model, which can run at a frequency of 1-3 Hz [Source: RT-2_VLA.pdf | Section: 4. Experiments | p.6 | score: 0.719]. This is in contrast to RT-1, which has a 35M parameter size and operates at 3 Hz [Source: RT-1_Robotics_Transformer.pdf | Section: RT-1:  R OBOTICS T RANSFORMER | p.2 | score: 0.736]. RT-2 also demonstrates better performance on distributional shift tasks, achieving comparable performance to RT-2-X and significantly outperforming RT-1-X and Octo [Source: OpenVLA.pdf | Section: state-of-the-art generalist robot policies on a comprehensive suite of tasks covering several axes of generalization, | p.8 | score: 0.718].",
+      "citations": [
+        {
+          "source_filename": "RT-1_Robotics_Transformer.pdf",
+          "paper_title": "RT-1: R T R -W C S",
+          "arxiv_id": "2212.06817",
+          "section_header": "RT-1:  R OBOTICS T RANSFORMER",
+          "page_number": 2,
+          "score": 0.7356
+        },
+        {
+          "source_filename": "RT-2_VLA.pdf",
+          "paper_title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control",
+          "arxiv_id": "2307.15818",
+          "section_header": "4. Experiments",
+          "page_number": 6,
+          "score": 0.7187
+        },
+        {
+          "source_filename": "OpenVLA.pdf",
+          "paper_title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+          "arxiv_id": "2406.09246",
+          "section_header": "state-of-the-art generalist robot policies on a comprehensive suite of tasks covering several axes of generalization,",
+          "page_number": 8,
+          "score": 0.7177
+        }
+      ],
+      "retrieved_chunks": [
+        "Preprint\n  Mode                     Arm                        Base\nPick apple from top drawer and place on counter\nInstruction\nImages\nFiLM \nEﬃcientNet\nTransformer\nTokenLearner\n…\nRT-1\n3 Hz\n(1+γ)               β\n·\n+\nAction\n(a) RT-1 takes images and natural language instructions and outputs discretized base and arm actions. Despite\nits size (35M parameters), it does this at 3 Hz, due to its efficient yet high-capacity architecture: a FiLM (Perez\net al., 2018) conditioned EfficientNet (Tan & Le, 2019), a TokenLearner (Ryoo et al., 2021), and a Trans-\nformer (Vaswani et al., 2017).\n(b) RT-1’s large-scale, real-world training (130k demonstrations) and evaluation (3000 real-world trials) show\nimpressive generalization, robustness, and ability to learn from diverse data.\nFigure 1: A high-level overview of RT-1’s architecture, dataset, and evaluation.\nThe two main challenges lie in assembling the right dataset and designing the right model. While",
+        "generalization to new scenarios. A short overview of RT-1 capabilities is presented in Fig. 1b2.\n2Helper robots shown in Fig. 1-5 are from Everyday Robots\n2",
+        "With this solution, we can achieve a suitable frequency of control and also serve multiple robots using\nthe same cloud service. The largest model we evaluated, the 55B parameter RT-2-PaLI-X-55B model,\ncan run at a frequency of 1-3 Hz. The smaller version of that model, consisting of 5B parameters, can\nrun at a frequency of around 5 Hz.\n4. Experiments\nOur experiments focus on real-world generalization and emergent capabilities of RT-2 and aim to\nanswer the following questions:\n6",
+        "distribution (OOD) tasks on the mobile manipulator used\nin RT-1 and RT-2 evaluations [2, 7]. We find that Open-\nVLA and RT-2-X attain comparable performance and\nsignificantly outperform RT-1-X and Octo overall. Aver-\nage success rates ± StdErr are computed across 60 total\nrollouts per approach. See Table 6 for detailed results.\nNotably, OpenVLA performs comparably to RT-\n2-X on Google robot evaluations and signifi-\ncantly outperforms RT-2-X on BridgeData V2\nevaluations despite being an order of magni-\ntude smaller (7B vs. 55B parameters). Qual-\nitatively, we find that both RT-2-X and Open-\nVLA exhibit markedly more robust behaviors\nthan the other tested models, such as approach-\ning the correct object when distractor objects\nare present, properly orienting the robot’s end-\neffector to align with the orientation of the\ntarget object, and even recovering from mis-\ntakes such as insecurely grasping objects (see\nhttps://openvla.github.io for qualitative\nrollout examples). RT-2-X achieves higher per-",
+        "prompting. While the current version of RT-1 is fairly robust especially to distractor objects, its\nrobustness to backgrounds and environments could be further improved by greatly increasing the\nenvironment diversity. We also hope to improve the reaction speeds and context retention of RT-1\nthrough scalable attention and memory.\nTo allow the research community to build on top of this work, we have open-sourced the code for RT-\n14, which we hope will provide researchers with a valuable resource for future research for scaling\nup robot learning.\nACKNOWLEDGMENTS\nWe would like to acknowledge Aleksandra Faust, Andy Christiansen, Chuyuan Fu, Daniel Kap-\npler, David Rendleman, Eric Jang, Jessica Gomez, Jessica Lin, Jie Tan, Josh Weaver, Justin Boyd,\nKrzysztof Choromanski, Matthew Bennice, Mengyuan Yan, Mrinal Kalakrishnan, Nik Stewart, Paul\nWohlhart, Peter Pastor, Pierre Sermanet, Wenlong Lu, Zhen Yu Song, Zhuo Xu, and the greater\nteams at Robotics at Google and Everyday Robots for their feedback and contributions."
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "How does Diffusion Policy represent robot action distributions?",
+      "category": "vla",
+      "ground_truth": "Diffusion Policy represents robot actions as a conditional denoising diffusion process, modeling the action distribution as the output of a denoising diffusion probabilistic model conditioned on observations.",
+      "answer": "Diffusion Policy represents robot action distributions by learning the gradient of the action-score function and iteratively optimizing with respect to this gradient field during inference via a series of stochastic Langevin dynamics steps [Source: Diffusion_Policy.pdf | Section: Learning via Action Diffusion | p.1 | score: 0.881]. This approach allows robot policies to inherit key properties from diffusion models, significantly improving performance and enabling the expression of multimodal action distributions [Source: Diffusion_Policy.pdf | Section: Learning via Action Diffusion | p.1 | score: 0.881].",
+      "citations": [
+        {
+          "source_filename": "Diffusion_Policy.pdf",
+          "paper_title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
+          "arxiv_id": "2303.04137",
+          "section_header": "Learning via Action Diffusion",
+          "page_number": 1,
+          "score": 0.8809
+        }
+      ],
+      "retrieved_chunks": [
+        "Diffusion Policy: Visuomotor Policy\nLearning via Action Diffusion\n.\nCheng Chi∗1, Zhenjia Xu∗1, Siyuan Feng2, Eric Cousineau2, Yilun Du3, Benjamin Burchfiel2,\nRuss Tedrake 2,3, Shuran Song1,4\nAbstract\nThis paper introduces Diffusion Policy, a new way of generating robot behavior by representing a robot’s visuomotor\npolicy as a conditional denoising diffusion process. We benchmark Diffusion Policy across 15 different tasks from 4\ndifferent robot manipulation benchmarks and find that it consistently outperforms existing state-of-the-art robot learning\nmethods with an average improvement of 46.9%. Diffusion Policy learns the gradient of the action-distribution score\nfunction and iteratively optimizes with respect to this gradient field during inference via a series of stochastic Langevin\ndynamics steps. We find that the diffusion formulation yields powerful advantages when used for robot policies, including",
+        "dynamics steps. We find that the diffusion formulation yields powerful advantages when used for robot policies, including\ngracefully handling multimodal action distributions, being suitable for high-dimensional action spaces, and exhibiting\nimpressive training stability. To fully unlock the potential of diffusion models for visuomotor policy learning on physical\nrobots, this paper presents a set of key technical contributions including the incorporation of receding horizon control,\nvisual conditioning, and the time-series diffusion transformer. We hope this work will help motivate a new generation of\npolicy learning techniques that are able to leverage the powerful generative modeling capabilities of diffusion models.\nCode, data, and training details is available diffusion-policy.cs.columbia.edu\nKeywords\nImitation learning, visuomotor policy, manipulation\nMixture of Gaussians\nExplicit Policy\n(a) Explicit Policy\n(b) Implicit Policy\n(c) Diffusion Policy\nImplicit Policy\nDiffusion Policy\n iter\nAction",
+        "an action, the policy infers the action-score gradient,\nconditioned\non\nvisual\nobservations,\nfor\nK\ndenoising\niterations (Fig. 1 c). This formulation allows robot policies\nto inherit several key properties from diffusion models –\nsignificantly improving performance.\n• Expressing multimodal action distributions. By\nlearning the gradient of the action score function\nSong and Ermon (2019) and performing Stochastic\nLangevin Dynamics sampling on this gradient field,\nDiffusion policy can express arbitrary normalizable\ndistributions Neal et al. (2011), which includes mul-\ntimodal action distributions, a well-known challenge\nfor policy learning.\narXiv:2303.04137v5  [cs.RO]  14 Mar 2024",
+        "diffusion model.\nWang et al. (2023) explore how diffusion models learned\nfrom expert demonstrations can be used to augment\nclassical explicit polices without directly taking advantage\nof diffusion models as policy representation.\nConcurrent to us, Pearce et al. (2023), Reuss et al.\n(2023) and Hansen-Estruch et al. (2023) has conducted\na complimentary analysis of diffusion-based policies in\nsimulated environments. While they focus more on effective\nsampling strategies, leveraging classifier-free guidance for\ngoal-conditioning as well as applications in Reinforcement\nLearning, and we focus on effective action spaces, our\nempirical findings largely concur in the simulated regime.\nIn addition, our extensive real-world experiments provide\nstrong evidence for the importance of a receding-horizon\nprediction scheme, the careful choice between velocity and\nposition control, and the necessity of optimization for real-\ntime inference and other critical design decisions for a\nphysical robot system.\n9",
+        "work can exploit the latest advancements in diffusion model\nacceleration methods to reduce the number of inference\nsteps required, such as new noise schedules Chen (2023),\ninference solvers Karras et al. (2022), and consistency\nmodels Song et al. (2023).\n10\nConclusion\nIn this work, we assess the feasibility of diffusion-based\npolicies for robot behaviors. Through a comprehensive\nevaluation of 15 tasks in simulation and the real world,\nwe demonstrate that diffusion-based visuomotor policies\nconsistently and definitively outperform existing methods\nwhile also being stable and easy to train. Our results also\nhighlight critical design factors, including receding-horizon\naction prediction, end-effector position control, and efficient\nvisual conditioning, that is crucial for unlocking the full\npotential of diffusion-based policies. While many factors\naffect the ultimate quality of behavior-cloned policies —\nincluding the quality and quantity of demonstrations, the"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What training stages does LLaVA-1.5 use?",
+      "category": "multimodal",
+      "ground_truth": "LLaVA-1.5 uses a two-stage training: first a feature alignment stage with a simple MLP connector, then visual instruction tuning with academic-task-oriented and language-only data.",
+      "answer": "LLaVA-1.5 uses the same pretraining dataset as LLaVA [Source: LLaVA_1.5.pdf | Section: 3.4. Scaling to Higher Resolutions | p.4 | score: 0.760]. The training iterations and batch size for instruction tuning are kept roughly the same as LLaVA [Source: LLaVA_1.5.pdf | Section: 3.4. Scaling to Higher Resolutions | p.4 | score: 0.760]. However, the computational cost increases due to the higher image input resolution, making the training process ∼2× longer: ∼6 hours of pretraining and ∼20 hours of visual instruction tuning, using 8× A100s [Source: LLaVA_1.5.pdf | Section: 3.4. Scaling to Higher Resolutions | p.4 | score: 0.760].",
+      "citations": [
+        {
+          "source_filename": "LLaVA_1.5.pdf",
+          "paper_title": "Improved Baselines with Visual Instruction Tuning",
+          "arxiv_id": "2310.03744",
+          "section_header": null,
+          "page_number": 1,
+          "score": 0.7795
+        }
+      ],
+      "retrieved_chunks": [
+        "-1.5\n129\n1.2\n1400\n50\n0.56\n0.67\nPre-training\nInstruction Tuning\nFigure 1. LLaVA-1.5 achieves SoTA on a broad range of 11 tasks\n(Top), with high training sample efficiency (Left) and simple mod-\nifications to LLaVA (Right): an MLP connector and including\nacademic-task-oriented data with response formatting prompts.\nHowever, despite many benchmarks and developments, it\nstill remains unclear what the best recipe is to train LMMs\ntowards the goal of general-purpose assistants. For exam-\nple, LLaVA [36] excels in conversational-style visual rea-\nsoning and even outperforms later approaches like Instruct-\nBLIP [14] on such benchmarks [55], while InstructBLIP\nexcels in traditional VQA benchmarks that demands single-\nword or short answers. Given the significant differences\nin the model architecture and training data between them,\nthe root cause of the disparity in their capabilities remains\nelusive, despite conjectures [37, 55]: the amount of training\ndata, the usage of resamplers like Qformer [32], etc. To this",
+        "LLaVA-Video (en) [307], FineVideo (en) [67], PerceptionTest (en) [193], HiREST (en) [291], STAR (en) [259],\nGeneral QA\nEgoSchema (en) [175], ScanQA (en) [10], LSMDC (en) [201]\nGUI\nGUI-World (en) [24]\nType: Text Datasets\nUltraFeedback (en) [48], UltraChat (en) [58], Unnatural-Instructions (en) [90], NoRobots (en) [196],\nMOSS (en) [221], LIMA (en) [314], SlimOrca (en) [142], WizardLM-Evol-Instruct-70K (en) [265],\nLlama-3-Magpie-Pro (en) [266], Magpie-Qwen2-Pro (en & zh) [266], KOpen-HQ-Hermes-2.5-60K (ko) [179],\nFirefly (zh) [270], Dolly (en) [44], OpenAI-Summarize-TLDR (en) [21], Know-Saraswati-CoT (en) [114],\nGeneral QA\nFLAN (en) [258], FLANv2 (en & zh) [41]\nCode-Feedback (en) [311], Glaive-Code-Assistant (en) [73], XCoder-80K (en) [255], LeetCode (en & zh),\nCode\nEvol-Instruct-Code (en) [173], InternLM2-Code (en & zh) [19]\nLong Context\nLong-Instruction-with-Paraphrasing (en & zh) [286], LongCite (en & zh) [298], LongQLoRA (en) [271],\nLongAlpaca (en) [34]",
+        "performs the original LLaVA [36].\nComputational cost. For LLaVA-1.5, we use the same\npretraining dataset, and keep the training iterations and batch\nsize roughly the same for instruction tuning as LLaVA [36].\nDue to the increased image input resolution to 3362, the\ntraining of LLaVA-1.5 is ∼2× as long as LLaVA: ∼6 hours\nof pretraining and ∼20 hours of visual instruction tuning,\nusing 8× A100s.\n3.4. Scaling to Higher Resolutions\nIn Sec. 3.3, we observe the advantage that scaling up the\ninput image resolution improves the model’s capabilities.\nHowever, the image resolution of the existing open source\nCLIP vision encoders is limited to 3362, preventing the\nsupport of higher resolution images by simply replacing the\nvision encoder as we did in Sec. 3.3. In this section, we\npresent an early exploration of scaling the LMM to higher\nresolutions, while maintaining the data efficiency of LLaVA-\n1.5.\nWhen using ViT [15] as the vision encoder, to scale up\nthe resolution, previous approaches mostly choose to per-",
+        "LLM, as demonstrated in Fig. 4 and Fig. 5.\nOne interesting emergent behavior of LLaVA is that it is able to understand visual contents that\nare not covered in the training. For example, in Fig. 6, it is able to recognize Elon Musk both in a\nheadshot and in a humorous meme where he is dressed as a doge, even though Elon Musk never\nappears in the training data for either the visual feature alignment or visual instruction tuning stages of\n14",
+        "contributing to the progress and responsible deployment of foundation models in vision-language\ntasks.\nB\nMore Results\nWe present more qualitative results of LLaVA to analyze its emergent behaviors and observed\nweaknesses. For more quantitative results of LLaVA on academic benchmarks, please refer to the\nimproved baselines with visual instruction tuning [32]. In Table 9, LLaVA demonstrates a similar\nbehavior as GPT-4 in another example from its paper. Similar to the GPT-4 live demo by OpenAI,\nLLaVA is capable of generating the HTML/JS/CSS code for an interactive joke website based on\na simplified user input sketch in Fig. 2, despite a minor error. As shown in Fig. 3, LLaVA can\nfollow user’s instructions in a conversational style and provide detailed responses or creative writings.\nFurthermore, LLaVA is able to relate the visual content to the textual knowledge from the pretrained\nLLM, as demonstrated in Fig. 4 and Fig. 5."
+      ],
+      "warnings": [
+        "LLaVA_1.5.pdf: section_header missing"
+      ],
+      "status": "partial"
+    },
+    {
+      "question": "How does CLIP align visual and textual representations?",
+      "category": "multimodal",
+      "ground_truth": "CLIP trains an image encoder and text encoder jointly using a contrastive loss on a large dataset of image-text pairs from the internet, maximizing similarity for matching pairs and minimizing it for non-matching pairs.",
+      "answer": "CLIP learns robust visual-textual representations by leveraging contrastive learning techniques [Source: CLIP_Adapter.pdf | Section: 2 Related Work | p.3]. Specifically, CLIP has been shown to learn representations that capture both semantics and style of images [Source: CLIP_Adapter.pdf | Section: 2 Related Work | p.3]. This allows CLIP to generate image embeddings conditioned on text captions, enabling a two-stage hierarchical text-conditioned image generation model [Source: DALL-E_2.pdf | Section: Image Generation with CLIP Latents | p.1]. The model explicitly generates image representations, which improves image diversity with minimal loss in photorealism and caption similarity [Source: DALL-E_2.pdf | Section: Image Generation with CLIP Latents | p.1].",
+      "citations": [
+        {
+          "source_filename": "DALL-E_2.pdf",
+          "paper_title": "Hierarchical Text-Conditional Image Generation with CLIP Latents",
+          "arxiv_id": "2204.06125",
+          "section_header": "Method",
+          "page_number": 3,
+          "score": 0.8317
+        },
+        {
+          "source_filename": "CLIP_Adapter.pdf",
+          "paper_title": "CLIP-Adapter: Better Vision-Language Models with Feature Adapters",
+          "arxiv_id": "2110.04544",
+          "section_header": "2 Related Work",
+          "page_number": 3,
+          "score": 0.8261
+        }
+      ],
+      "retrieved_chunks": [
+        "Figure 2: A high-level overview of unCLIP. Above the dotted line, we depict the CLIP training process,\nthrough which we learn a joint representation space for text and images. Below the dotted line, we depict our\ntext-to-image generation process: a CLIP text embedding is ﬁrst fed to an autoregressive or diffusion prior\nto produce an image embedding, and then this embedding is used to condition a diffusion decoder which\nproduces a ﬁnal image. Note that the CLIP model is frozen during training of the prior and decoder.\nluck and diligent manual examination. Furthermore, encoding and decoding images also provides us with a\ntool for observing which features of the image are recognized or disregarded by CLIP.\nTo obtain a full generative model of images, we combine the CLIP image embedding decoder with a prior\nmodel, which generates possible CLIP image embeddings from a given text caption. We compare our\ntext-to-image system with other systems such as DALL-E [40] and GLIDE [35], ﬁnding that our samples are",
+        "are on-par in image-text alignment to the reference images on COCO captions.\nWe introduce DrawBench, a new structured suite of text prompts for text-to-image evaluation. Draw-\nBench enables deeper insights through a multi-dimensional evaluation of text-to-image models, with\ntext prompts designed to probe different semantic properties of models. These include composi-\ntionality, cardinality, spatial relations, the ability to handle complex text prompts or prompts with\nrare words, and they include creative prompts that push the limits of models’ ability to generate\nhighly implausible scenes well beyond the scope of the training data. With DrawBench, extensive\nhuman evaluation shows that Imagen outperforms other recent methods [57, 12, 54] by a signiﬁcant\nmargin. We further demonstrate some of the clear advantages of the use of large pre-trained language\nmodels [52] over multi-modal embeddings such as CLIP [49] as a text encoder for Imagen.\nKey contributions of the paper include:",
+        "research topic in artificial intelligence. Previously,\nattention-based approaches such as bottom-up\ntop-down attention [2], BAN [30], Intra-Inter [14],\nand MCAN [70] had dominated visual-language\ntasks. Inspired by the success of BERT [10], ViL-\nBERT [43], LXMERT [59], UNITER [6], Oscar [36],\nALBEF [35], and BEiT [64] further push the bound-\nary of multimodal reasoning. Recently, CLIP [50]\nand ALIGN [27] demonstrates the power of visual-\nlanguage contrastive representation learning. They\nachieve astonishing results on a wide spectrum of\nvision tasks, including 3D [74, 76], video [39], and\ndepth [71] understanding. To further close the gap\nbetween CLIP and supervised training, CoOp pro-\nposes a continuous prompt optimization method\nfor improving the performance on visual classifica-\ntion tasks. While CoOp improves vision-language\nmodels from the perspective of prompt design,\nour CLIP-Adapter explores simple finetuning with\nlightweight feature adapters.",
+        "Hierarchical Text-Conditional\nImage Generation with CLIP Latents\nAditya Ramesh∗\nOpenAI\naramesh@openai.com\nPrafulla Dhariwal∗\nOpenAI\nprafulla@openai.com\nAlex Nichol∗\nOpenAI\nalex@openai.com\nCasey Chu∗\nOpenAI\ncasey@openai.com\nMark Chen\nOpenAI\nmark@openai.com\nAbstract\nContrastive models like CLIP have been shown to learn robust representations of\nimages that capture both semantics and style. To leverage these representations for\nimage generation, we propose a two-stage model: a prior that generates a CLIP\nimage embedding given a text caption, and a decoder that generates an image\nconditioned on the image embedding. We show that explicitly generating image\nrepresentations improves image diversity with minimal loss in photorealism and\ncaption similarity. Our decoders conditioned on image representations can also\nproduce variations of an image that preserve both its semantics and style, while\nvarying the non-essential details absent from the image representation. Moreover,",
+        "embeddings to the other modalities without observing them\ntogether during training. Given the novelty of our problem\nsetting, there are no “fair” baselines to compare IMAGE-\nBIND with. Nevertheless, we compare to prior work that\nuses text paired with certain modalities (e.g. audio [27, 51]),\nand for certain “visual-like” modalities such as depth and\nthermal, we use the CLIP model directly. We also report\nthe best reported supervised upper bound per benchmark.\nIMAGEBIND achieves a high emergent zero-shot clas-\nsification performance. On each benchmark, IMAGEBIND\nachieves strong gains and even compares favorably to super-\nvised specialist models trained for the specific modality and\ntask. These results demonstrate that IMAGEBIND aligns the\nmodalities and implicitly transfers the text supervision as-\nsociated with images to other modalities like audio. In par-\nticular, IMAGEBIND shows strong alignment for non-visual\nmodalities like audio and IMU suggesting that their natu-"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What is the chain-of-thought prompting technique?",
+      "category": "reasoning",
+      "ground_truth": "Chain-of-thought prompting elicits multi-step reasoning in large language models by providing few-shot examples that include intermediate reasoning steps before the final answer.",
+      "answer": "Chain-of-thought prompting is a technique that guides large language models to produce a sequence of intermediate reasoning steps before providing the final answer. [Source: Emergent_Abilities_of_LLMs.pdf | Section: 10 NLU task average | p.5] This method is designed to enhance the complex reasoning capabilities of language models. [Source: Chain-of-Thought_Prompting.pdf | Section: in Large Language Models | p.1] It involves providing a few examples of chains of thought as exemplars in the prompting process. [Source: PaLM.pdf | Section: 6.3 Reasoning | p.20] The technique has been shown to significantly improve performance on arithmetic, commonsense, and symbolic reasoning tasks. [Source: Chain-of-Thought_Prompting.pdf | Section: in Large Language Models | p.1] At the time of the publication of the provided documents, chain-of-thought prompting had achieved state-of-the-art performance on benchmarks like GSM8K [Source: Chain-of-Thought_Prompting.pdf | Section: Abstract | p.1].",
+      "citations": [
+        {
+          "source_filename": "Chain-of-Thought_Prompting.pdf",
+          "paper_title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+          "arxiv_id": "2201.11903",
+          "section_header": "Extended Related Work",
+          "page_number": 24,
+          "score": 0.8496
+        },
+        {
+          "source_filename": "PaLM.pdf",
+          "paper_title": "PaLM: Scaling Language Modeling with Pathways",
+          "arxiv_id": "2204.02311",
+          "section_header": "6.3 Reasoning",
+          "page_number": 20,
+          "score": 0.8483
+        },
+        {
+          "source_filename": "Emergent_Abilities_of_LLMs.pdf",
+          "paper_title": "Emergent Abilities of Large Language Models",
+          "arxiv_id": "2206.07682",
+          "section_header": "10 NLU task average",
+          "page_number": 5,
+          "score": 0.844
+        }
+      ],
+      "retrieved_chunks": [
+        "C\nExtended Related Work\nChain-of-thought prompting is a general approach that is inspired by several prior directions: prompt-\ning, natural language explanations, program synthesis/execution, numeric and logical reasoning, and\nintermediate language steps.\nC.1\nPrompting\nThe recent success of large-scale language models has led to growing interest in improving their\ncapability to perform tasks via prompting (Brown et al. (2020), and see Liu et al. (2021) for a\nsurvey). This paper falls in the category of general prompting approaches, whereby input prompts are\noptimized to allow a single large language model to better perform a variety of tasks (Li and Liang,\n2021; Lester et al., 2021; Reif et al., 2022, inter alia).\nOne recent line of work aims to improve the ability of language models to perform a task by providing\ninstructions that describe the task (Raffel et al., 2020; Wei et al., 2022a; Ouyang et al., 2022; Sanh",
+        "et al., 2021; Wei et al., 2022b). In this work, we refer to this technique as chain-of-thought prompting. In\nthe few-shot setting, these intermediate reasoning steps are manually written for the few-shot exemplars,\nand the model will then generate its own chain-of-thoughts for the test examples. Only the ﬁnal answer is\nused for evaluation, although these generated chain-of-thoughts can be useful for error analysis and model\ninterpretability. An example of chain-of-thought prompting for the GSM8K benchmark (grade-school math\nproblems) is given below in Figure 8.\n20",
+        "shown in D is from Anthropic.\nMulti-step reasoning. Reasoning tasks, especially those involving multiple steps, have been challenging for\nlanguage models and NLP models more broadly (Rae et al., 2021; Bommasani et al., 2021; Nye et al., 2021). A\nrecent prompting strategy called chain-of-thought prompting enables language models to solve such problems\nby guiding them to produce a sequence of intermediate steps before giving the ﬁnal answer (Cobbe et al., 2021;\nWei et al., 2022b; Suzgun et al., 2022). As shown in Figure 3A, chain of thought prompting only surpasses\nstandard prompting without intermediate steps when scaled to 1023 training FLOPs (∼100B parameters).\nA similar emergence in performance gain was also observed when augmenting few-shot prompting with\nexplanations that came after the ﬁnal answer (Lampinen et al., 2022).\nInstruction following. Another growing line of work aims to better enable language models to perform",
+        "Chain-of-Thought Prompting Elicits Reasoning\nin Large Language Models\nJason Wei\nXuezhi Wang\nDale Schuurmans\nMaarten Bosma\nBrian Ichter\nFei Xia\nEd H. Chi\nQuoc V. Le\nDenny Zhou\nGoogle Research, Brain Team\n{jasonwei,dennyzhou}@google.com\nAbstract\nWe explore how generating a chain of thought—a series of intermediate reasoning\nsteps—signiﬁcantly improves the ability of large language models to perform\ncomplex reasoning. In particular, we show how such reasoning abilities emerge\nnaturally in sufﬁciently large language models via a simple method called chain-of-\nthought prompting, where a few chain of thought demonstrations are provided as\nexemplars in prompting.\nExperiments on three large language models show that chain-of-thought prompting\nimproves performance on a range of arithmetic, commonsense, and symbolic\nreasoning tasks. The empirical gains can be striking. For instance, prompting a\nPaLM 540B with just eight chain-of-thought exemplars achieves state-of-the-art",
+        "chain-of-thought prompting by constructing for each prompting method a simple prompt context that\ncontains a single example that is solvable with just 2 reasoning steps. We then evaluate accuracy\non examples that may involve larger numbers of reasoning steps. The same example is used for\nboth prompting methods. For the least-to-most prompting prompt, we adopt a simpliﬁed approach\nin which the problem decomposition and solution stages are merged into a single pass, with just one\nfollow-up request being made to the language model to solicit the ﬁnal answer.\nThe accuracy (%) of the two prompting methods with the GPT-3 code-davinci-002 model,\nwith breakdown by number of steps in the expected solution, are listed in Table 18.\nAccuracy numbers for all prompting methods are calculated after applying the same post-processing\nas described in Section 3.3 for DROP.\nWhile the least-to-most prompting accuracy is overall only moderately higher than that of chain-of-"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "How does DeepSeek-R1 train reasoning capabilities without supervised chain-of-thought data?",
+      "category": "reasoning",
+      "ground_truth": "DeepSeek-R1 uses Group Relative Policy Optimization (GRPO) reinforcement learning with accuracy and format rewards to develop reasoning capabilities from scratch, then applies rejection sampling and supervised fine-tuning for distillation.",
+      "answer": "DeepSeek-R1 trains reasoning capabilities through a multi-stage learning framework that integrates reinforcement learning (RL). [Source: DeepSeek_R1.pdf | Section: https://huggingface.co/deepseek-ai . | p.2] Specifically, the model is initially trained on a large dataset without any chain-of-thought annotations. [Source: DeepSeek_R1.pdf | Section: https://huggingface.co/deepseek-ai . | p.2] During the training, DeepSeek-R1-Zero is subjected to RL training, where it is required to produce a reasoning process followed by the final answer. [Source: DeepSeek_R1.pdf | Section: 2.3. Incentivize Reasoning Capability in LLMs | p.4] The RL training is designed to incentivize the model to develop advanced reasoning patterns such as self-reflection, verification, and dynamic strategy adaptation. [Source: DeepSeek_R1.pdf | Section: Reinforcement Learning | p.1] This approach allows DeepSeek-R1 to learn reasoning strategies through reinforcement learning without the need for human-annotated reasoning data. [Source: DeepSeek_R1.pdf | Section: Reinforcement Learning | p.1] The exact details of the RL training process and its effectiveness are detailed in Section 2 of the provided document [Source: DeepSeek_R1.pdf | Section: 2.3. Incentivize Reasoning Capability in LLMs | p.4].",
+      "citations": [
+        {
+          "source_filename": "DeepSeek_R1.pdf",
+          "paper_title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+          "arxiv_id": "2501.12948",
+          "section_header": "https://huggingface.co/deepseek-ai .",
+          "page_number": 2,
+          "score": 0.8851
+        }
+      ],
+      "retrieved_chunks": [
+        "formance in broader areas such as writing and open-domain question answering. To address\nthese challenges, we introduce DeepSeek-R1, a model trained through a multi-stage learning\nframework that integrates rejection sampling, reinforcement learning, and supervised fine-\ntuning, detailed in Section 3. This training pipeline enables DeepSeek-R1 to inherit the reasoning\ncapabilities of its predecessor, DeepSeek-R1-Zero, while aligning model behavior with human\npreferences through additional non-reasoning data.\nTo enable broader access to powerful AI at a lower energy cost, we have distilled sev-\neral smaller models and made them publicly available. These distilled models exhibit strong\nreasoning capabilities, surpassing the performance of their original instruction-tuned coun-\nterparts. We believe that these instruction-tuned versions will also significantly contribute to\nthe research community by providing a valuable resource for understanding the mechanisms",
+        "in LLMs. Through this process, detailed in Section 2, our model (referred to as DeepSeek-R1-\nZero) naturally developed diverse and sophisticated reasoning behaviors. In solving reasoning\nproblems, the model exhibits a tendency to generate longer responses, incorporating verification,\nreflection, and the exploration of alternative approaches within each response. Although we\ndo not explicitly teach the model how to reason, it successfully learns improved reasoning\nstrategies through reinforcement learning.\nAlthough DeepSeek-R1-Zero demonstrates excellent reasoning capabilities, it faces chal-\nlenges such as poor readability and language mixing, occasionally combining English and\nChinese within a single chain-of-thought response. Furthermore, the rule-based RL training\nstage of DeepSeek-R1-Zero is narrowly focused on reasoning tasks, resulting in limited per-\nformance in broader areas such as writing and open-domain question answering. To address",
+        "ing such models necessitates substantial computational resources and introduces additional\ncomplexity into the training pipeline, thereby complicating the overall optimization process.\n2.3. Incentivize Reasoning Capability in LLMs\nSpecifically, we apply the RL technique on the DeepSeek-V3 base to train DeepSeek-R1-Zero.\nDuring training, we design a straightforward template, to require DeepSeek-R1-Zero to first\nproduce a reasoning process, followed by the final answer. We intentionally limit our constraints\nto this structural format, avoiding any content-specific biases to ensure that we can accurately\nobserve the model’s natural progression during the RL process.\nFigure 1(a) depicts the performance trajectory of DeepSeek-R1-Zero on the AIME 2024\nbenchmark throughout the RL training process, where the average pass@1 score on AIME\n2024 shows a significant increase, jumping from an initial 15.6% to 77.9%. In addition, by",
+        "DeepSeek-R1-Zero struggles with challenges like poor readability, and language mixing, as\nDeepSeek-V3-Base is trained on multiple languages, especially English and Chinese. To address\nthese issues, we develop DeepSeek-R1, whose pipeline is illustrated in Figure 2.\nIn the initial stage, we collect thousands of cold-start data that exhibits a conversational,\nhuman-aligned thinking process. RL training is then applied to improve the model perfor-\nmance with the conversational thinking process and language consistency. Subsequently, we\napply rejection sampling and SFT once more. This stage incorporates both reasoning and non-\nreasoning datasets into the SFT process, enabling the model to not only excel in reasoning tasks\nbut also demonstrate advanced writing capabilities. To further align the model with human\npreferences, we implement a secondary RL stage designed to enhance the model’s helpfulness\nand harmlessness while simultaneously refining its reasoning capabilities.",
+        "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via\nReinforcement Learning\nDeepSeek-AI\nresearch@deepseek.com\nAbstract\nGeneral reasoning represents a long-standing and formidable challenge in artificial intelli-\ngence. Recent breakthroughs, exemplified by large language models (LLMs) (Brown et al.,\n2020; OpenAI, 2023) and chain-of-thought prompting (Wei et al., 2022b), have achieved con-\nsiderable success on foundational reasoning tasks. However, this success is heavily contingent\nupon extensive human-annotated demonstrations, and models’ capabilities are still insuffi-\ncient for more complex problems. Here we show that the reasoning abilities of LLMs can be\nincentivized through pure reinforcement learning (RL), obviating the need for human-labeled\nreasoning trajectories. The proposed RL framework facilitates the emergent development of\nadvanced reasoning patterns, such as self-reflection, verification, and dynamic strategy adapta-"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What does Llama Guard classify?",
+      "category": "safety",
+      "ground_truth": "Llama Guard is an LLM-based input-output safeguard model that classifies safety risks in both human prompts and AI responses according to a predefined taxonomy of harm categories.",
+      "answer": "Llama Guard classifies text inputs into \"safe\" or \"unsafe\" categories based on the specified output format. [Source: Llama_Guard.pdf | Section: 3 Building Llama Guard | p.3] Each classification includes a new line listing the taxonomy categories that are violated in the given piece of content [Source: Llama_Guard.pdf | Section: 3.2 Zero-shot and Few-shot Prompting | p.4].",
+      "citations": [
+        {
+          "source_filename": "Llama_Guard.pdf",
+          "paper_title": "Llama Guard: LLM-based Input-Output Safeguard for Human-AI Conversations",
+          "arxiv_id": "2312.06674",
+          "section_header": "3.2 Zero-shot and Few-shot Prompting",
+          "page_number": 4,
+          "score": 0.8043
+        }
+      ],
+      "retrieved_chunks": [
+        "Figure 1 Example task instructions for the Llama Guard prompt and response classification tasks. A task consists of\nfour main components. Llama Guard is trained on producing the desired result in the output format described in the\ninstructions.\nthe taxonomy categories that consists of a letter (e.g. ’O’) followed by the 1-based category index. With this\noutput format, Llama Guard accommodates binary and multi-label classification, where the classifier score\ncan be read off from the probability of the first token. The same format allows for 1 vs. all classification, by\nincluding a single category of interest in the prompt of each sample and generating a single token to read off\nthe binary decision.\nFigure 1 illustrates the prompt and response classification tasks for Llama Guard, as well as the desired\noutput format.\n3.2\nZero-shot and Few-shot Prompting\nThe guidelines that Llama Guard is trained on may not be the same as the desired guidelines for the target",
+        "with external red teaming contractors. Although the outcome of this exercise did not point us to additional\nrisks beyond those of the pretrained Llama2-7b model, we still ask our audience to exercise caution. When\nprompted as a chat model, instead of the intended use as a classifier, Llama Guard may generate language\nthat can be considered unethical or unsafe, primarily due to the lack of safety fine-tuning for a chat use case.\nLastly, we note that as an LLM, Llama Guard may be susceptible to prompt injection attacks that could\nalter or bypass its intended use.\n7\nConclusion\nWe introduced Llama Guard, an LLM-based input-output safeguard model applicable for human-AI conversa-\ntions. We also introduced a safety risk taxonomy and the applicable policy, with which we collected data and\ntrained Llama Guard. Being an LLM, Llama Guard can be trained for prompt and response classification\ntasks separately, without added overhead for a traditional multi-task setup. We validated Llama Guard first",
+        "Llama Guard Zero-shot (w/ OpenAI Mod categories)\n0.847\nLlama Guard Few-shot (w/ description and in-context examples)\n0.872\nTable 4 Comparison of no adaptation, category adaptation, and few-shot learning on the OpenAI-Mod dataset (Markov\net al., 2023). Note that Llama Guard is trained on a separate policy than that used for the OpenAI moderation API,\nwhich is aligned with the characteristics of this dataset.\nWe find that adapting to a new policy exclusively through prompting is effective while also being low cost\ncompared to fine-tuning.\nTable 4 compares binary classification performance of Llama Guard and OpenAI’s approach (Markov et al.,\n2023) on the OpenAI moderation test set under different prompt adaptations.\nIndeed, adapting the model by simply providing a taxonomy with a short description improves the alignment\nof the model with the OpenAI taxonomy. Furthermore, additionally providing 2 to 4 examples in the prompt\n8",
+        "Data Augmentation. Since Llama Guard takes guidelines as model input, it is desired that when any\nsubset of the categories in a full taxonomy is included, the safety assessment should take into account only\nthe included categories. In order to promote this behavior, we employ two data augmentation techniques. In\nthe first one, we drop a random number of categories from the model prompt if they’re not violated in the\ngiven example. In the second one, we drop all violated categories from the input prompt, while changing the\nlabel for that example to be ’safe’. We shuffle the category indices across training examples (while making\ncorresponding changes in the desired outputs) in order to avoid format memorization.\n4\nExperiments\nThe absence of standardized taxonomies makes comparing different models challenging, as they were trained\nagainst different taxonomies (for example, Llama Guard recognizes Guns and Illegal Weapons as a category,",
+        "The output format. Each task specifies the desired output format, which dictates the nature of the\nclassification problem. In Llama Guard, the output contains two elements. First, the model should output\n“safe” or “unsafe”, both of which are single tokens in the SentencePiece tokenizer that we use (Kudo and\nRichardson, 2018). If the model assessment is “unsafe”, then the output should contain a new line, listing the\ntaxonomy categories that are violated in the given piece of content. We train Llama Guard to use a format for\n4We recognize that the word “prompt” may apply to both the prompts of LLM-based AI agents, and the prompts for Llama\nGuard. To avoid confusion, this paper uses “prompt” to refer to the former, and the latter is referred to as “Llama Guard\nprompt”.\n3"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What is the core representation used in 3D Gaussian Splatting?",
+      "category": "3d_vision",
+      "ground_truth": "3D Gaussian Splatting represents scenes as a collection of 3D Gaussian primitives with learnable position, covariance, opacity, and spherical harmonic color coefficients, enabling real-time differentiable rasterization.",
+      "answer": "The core representation used in 3D Gaussian Splatting is 3D Gaussian splats. [Source: 3D_Gaussian_Splatting.pdf | Section: RELATED WORK | p.2] These splats allow for a high-quality, unstructured, and precise representation of the scene, with up to 1-5 million Gaussians tested for all scenes [Source: 3D_Gaussian_Splatting.pdf | Section: 6 FAST DIFFERENTIABLE RASTERIZER FOR GAUSSIANS | p.6 | score: 0.845].",
+      "citations": [
+        {
+          "source_filename": "3D_Gaussian_Splatting.pdf",
+          "paper_title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+          "arxiv_id": "2308.04079",
+          "section_header": "6 FAST DIFFERENTIABLE RASTERIZER FOR GAUSSIANS",
+          "page_number": 6,
+          "score": 0.8451
+        }
+      ],
+      "retrieved_chunks": [
+        "rasterizer allows efficient backpropagation over an arbitrary num-\nber of blended Gaussians with low additional memory consump-\ntion, requiring only a constant overhead per pixel. Our rasterization\npipeline is fully differentiable, and given the projection to 2D (Sec. 4)\ncan rasterize anisotropic splats similar to previous 2D splatting\nmethods [Kopanas et al. 2021].\nOur method starts by splitting the screen into 16×16 tiles, and\nthen proceeds to cull 3D Gaussians against the view frustum and\neach tile. Specifically, we only keep Gaussians with a 99% confi-\ndence interval intersecting the view frustum. Additionally, we use a\nguard band to trivially reject Gaussians at extreme positions (i.e.,\nthose with means close to the near plane and far outside the view\nfrustum), since computing their projected 2D covariance would\nbe unstable. We then instantiate each Gaussian according to the\nnumber of tiles they overlap and assign each instance a key that\ncombines view space depth and tile ID. We then sort Gaussians",
+        "3D Gaussian Splatting for Real-Time Radiance Field Rendering\nBERNHARD KERBL∗, Inria, Université Côte d’Azur, France\nGEORGIOS KOPANAS∗, Inria, Université Côte d’Azur, France\nTHOMAS LEIMKÜHLER, Max-Planck-Institut für Informatik, Germany\nGEORGE DRETTAKIS, Inria, Université Côte d’Azur, France\nGround Truth\nInstantNGP (9.2  fps) \nPlenoxels (8.2 fps) \nTrain: 7min, PSNR: 22.1\nTrain: 26min, PSNR: 21.9\nMip-NeRF360 (0.071 fps) \nTrain: 48 h, PSNR: 24.3\nOurs (135  fps) \nTrain: 6 min, PSNR: 23.6\nOurs (93  fps) \nTrain: 51min, PSNR: 25.2\nFig. 1. Our method achieves real-time rendering of radiance fields with quality that equals the previous method with the best quality [Barron et al. 2022],\nwhile only requiring optimization times competitive with the fastest previous methods [Fridovich-Keil and Yu et al. 2022; Müller et al. 2022]. Key to this\nperformance is a novel 3D Gaussian scene representation coupled with a real-time differentiable renderer, which offers significant speedup to both scene",
+        "3D Gaussian Splatting for Real-Time Radiance Field Rendering\n•\n1:11\nGround  \nTruth\nFull\nIsotropic\nGround  \nTruth\nFull\nIsotropic\nGround  \nTruth\nFull\nIsotropic\nFig. 10. We train scenes with Gaussian anisotropy disabled and enabled. The use of anisotropic volumetric splats enables modelling of fine structures and has\na significant impact on visual quality. Note that for illustrative purposes, we restricted Ficus to use no more than 5k Gaussians in both configurations.\nEven though we are very compact compared to previous point-\nbased approaches, our memory consumption is significantly higher\nthan NeRF-based solutions. During training of large scenes, peak\nGPU memory consumption can exceed 20 GB in our unoptimized\nprototype. However, this figure could be significantly reduced by a\ncareful low-level implementation of the optimization logic (similar\nto InstantNGP). Rendering the trained scene requires sufficient GPU\nmemory to store the full model (several hundred megabytes for",
+        "3D Gaussian Splatting for Real-Time Radiance Field Rendering\n•\n1:5\nDiﬀerentiable\nTile Rasterizer\nAdaptive\nDensity Control\nProjection\nInitialization\nSfM Points\n3D Gaussians\nImage\nCamera\nGradient Flow\nOperation Flow\nFig. 2. Optimization starts with the sparse SfM point cloud and creates a set of 3D Gaussians. We then optimize and adaptively control the density of this set\nof Gaussians. During optimization we use our fast tile-based renderer, allowing competitive training times compared to SOTA fast radiance field methods.\nOnce trained, our renderer allows real-time navigation for a wide variety of scenes.\nOriginal\nShrunken\nGaussians\nFig. 3. We visualize the 3D Gaussians after optimization by shrinking them\n60% (far right). This clearly shows the anisotropic shapes of the 3D Gaussians\nthat compactly represent complex geometry after optimization. Left the\nactual rendered image.\n5.1\nOptimization\nThe optimization is based on successive iterations of rendering and",
+        "compact, unstructured, and precise representation of the scene (1-5\nmillion Gaussians for all scenes tested). The third and final element\nof our method is our real-time rendering solution that uses fast GPU\nsorting algorithms and is inspired by tile-based rasterization, fol-\nlowing recent work [Lassner and Zollhofer 2021]. However, thanks\nto our 3D Gaussian representation, we can perform anisotropic\nsplatting that respects visibility ordering – thanks to sorting and 𝛼-\nblending – and enable a fast and accurate backward pass by tracking\nthe traversal of as many sorted splats as required.\nTo summarize, we provide the following contributions:\n• The introduction of anisotropic 3D Gaussians as a high-quality,\nunstructured representation of radiance fields.\n• An optimization method of 3D Gaussian properties, inter-\nleaved with adaptive density control that creates high-quality\nrepresentations for captured scenes.\n• A fast, differentiable rendering approach for the GPU, which"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What architectural choices does MobileLLM make to optimize language models for mobile devices?",
+      "category": "on_device",
+      "ground_truth": "MobileLLM prioritizes model depth over width, uses embedding sharing and grouped query attention, and applies immediate block-wise weight sharing to improve parameter efficiency for sub-billion parameter language models.",
+      "answer": "MobileLLM optimizes language models for mobile devices through several architectural choices:\n- Adopting deep and thin architectures to reduce model complexity while maintaining performance. [Source: MobileLLM.pdf | Section: for On-Device Use Cases | p.1] - Utilizing embedding sharing mechanisms to minimize the number of parameters. [Source: MobileLLM.pdf | Section: — | p.7] - Implementing grouped-query attention mechanisms to improve computational efficiency. [Source: MobileLLM.pdf | Section: for On-Device Use Cases | p.1] - Proposing an immediate block-wise weight-sharing approach that reduces model size and only marginally increases latency overhead [Source: MobileLLM.pdf | Section: 2. Improving Sub-billion Scale LLM Design | p.2 | score: 0.843]. [Source: MobileLLM.pdf | Section: 2. Improving Sub-billion Scale LLM Design | p.2] These choices enable MobileLLM to achieve notable accuracy boosts over existing models, demonstrating its effectiveness for on-device use cases [Source: MobileLLM.pdf | Section: for On-Device Use Cases | p.1 | score: 0.892].",
+      "citations": [
+        {
+          "source_filename": "MobileLLM.pdf",
+          "paper_title": "MobileLLM: Optimizing Sub-billion Parameter Language Models  for On-Device Use Cases",
+          "arxiv_id": "2402.14905",
+          "section_header": "for On-Device Use Cases",
+          "page_number": 1,
+          "score": 0.8919
+        }
+      ],
+      "retrieved_chunks": [
+        "MobileLLM: Optimizing Sub-billion Parameter Language Models\nfor On-Device Use Cases\nZechun Liu 1 Changsheng Zhao 1 Forrest Iandola 1 Chen Lai 1 Yuandong Tian 1 Igor Fedorov 1\nYunyang Xiong 1 Ernie Chang 1 Yangyang Shi 1 Raghuraman Krishnamoorthi 1 Liangzhen Lai 1\nVikas Chandra 1\nAbstract\nThis paper addresses the growing need for ef-\nficient large language models (LLMs) on mo-\nbile devices, driven by increasing cloud costs\nand latency concerns. We focus on designing\ntop-quality LLMs with fewer than a billion pa-\nrameters, a practical choice for mobile deploy-\nment. Contrary to prevailing belief emphasiz-\ning the pivotal role of data and parameter quan-\ntity in determining model quality, our investiga-\ntion underscores the significance of model archi-\ntecture for sub-billion scale LLMs. Leveraging\ndeep and thin architectures, coupled with embed-\nding sharing and grouped-query attention mech-\nanisms, we establish a strong baseline network\ndenoted as MobileLLM, which attains a remark-",
+        "anisms, we establish a strong baseline network\ndenoted as MobileLLM, which attains a remark-\nable 2.7%/4.3% accuracy boost over preceding\n125M/350M state-of-the-art models. Addition-\nally, we propose an immediate block-wise weight-\nsharing approach with no increase in model size\nand only marginal latency overhead.\nThe re-\nsultant models, denoted as MobileLLM-LS,\ndemonstrate a further accuracy enhancement\nof 0.7%/0.8% than MobileLLM 125M/350M.\nMoreover, MobileLLM model family shows sig-\nnificant improvements compared to previous sub-\nbillion models on chat benchmarks, and demon-\nstrates close correctness to LLaMA-v2 7B in API\ncalling tasks, highlighting the capability of small\nmodels for common on-device use cases.\n1. Introduction\nLarge language models (LLMs) are permeating various\nfacets of human life, influencing not only the way people\n1Meta.\nCorrespondence to:\nZechun Liu <zechun-\nliu@meta.com>.\nProceedings of the 41 st International Conference on Machine",
+        "MobileLLM model family significantly outperforms\nequivalently-sized models. In an API calling task,\nMobileLLM-350M even achieves a comparable exact-\nmatch score as a much larger LLaMA-v2 7B model.\n• We further demonstrate that our design philosophy\nscales effectively to larger models, with results for\nMobileLLM-600M/1B/1.5B detailed in Appendix A.\n2. Improving Sub-billion Scale LLM Design\nIn this section, we present the evolutionary path from a\nbaseline sub-billion parameter model to the new state-of-\nthe-art models (Figure 3). We explore both 125M and 350M\nmodels and demonstrate consistent improvements in both\ncases. For on-device use cases where model size is a major\nconstraint, how to allocate the limited weight parameters\neffectively becomes more critical than ever. We first propose\na strong baseline model named MobileLLM by testing out\nfour model design techniques that are beneficial for sub-\nbillion scale LLMs, including (1) adopting SwiGLU FFN",
+        "MobileLLM\nTable 5: Benchmark results on AlpacaEval (Evaluator: GPT-\n4; Reference model: text-davinci-001) and MT-Bench.\nModel\nMT-Bench(score) Alpaca Eval(win %)\nnumber of parameters < 200M\nOPT-125M\n1.21\n3.91\nGPT-Neo-125M\n1.06\n1.01\nPythia-160M\n1.01\n0.63\nMobileLLM-125M\n2.33\n24.07\nMobileLLM-LS-125M\n2.52\n23.79\n200M < number of parameters < 1B\nOPT-350M\n1.37\n6.80\nPythia-410M\n1.62\n13.87\nBLOOM-560M\n1.73\n10.29\nMobileLLM-350M\n3.28\n47.08\nMobileLLM-LS-350M\n3.16\n48.20\nnumber of parameters > 1B\nPythia-1B\n1.70\n16.62\nBLOOM-1.1B\n2.37\n19.90\nFalcon-1.3B\n2.54\n30.38\nOPT-1.3B\n2.24\n38.84\n3.3. Downstream Tasks\nTo validate the effectiveness of sub-billion scale models for\non-device applications, we assess their performance in two\ncrucial on-device tasks: Chat and API calling.\n3.3.1. CHAT\nWe fine-tune MobileLLM models, as well as previous\nstate-of-the-art (SoTA) models sourced from HuggingFace\ncheckpoints for chat-based tasks, and evaluate them un-\nder identical settings to ensure consistency. We evaluate",
+        "4\nConclusion\nIn this paper, we introduce TinyLlama, an open-source, small-scale language model. With its compact\narchitecture and promising performance, TinyLlama can enable end-user applications on mobile\ndevices, and serve as a lightweight platform for testing a wide range of innovative ideas related\nto language models. We also additionally verify the effectiveness of multi-stage training and data\nschedule through our v1.1 series. To promote transparency in the open-source language model\npre-training community, we have released all relevant information, including our pre-training code,\nintermediate model checkpoints, and the details of our data processing steps. We hope that TinyLlama\nwill make a valuable contribution to the community as we aim to democratize language model\nresearch and provide useful insights for future research in this field.\nAcknowledgements\nWe express our gratitude to the open-source community for their strong support during the open, live"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "How does RT-2 transfer web-scale knowledge to robot manipulation?",
+      "category": "vla",
+      "ground_truth": "",
+      "answer": "RT-2 transfers web-scale knowledge to robot manipulation by leveraging pre-trained Vision-Language Models (VLMs). [Source: RT-2_VLA.pdf | Section: 2. Can we observe and measure any emergent capabilities of RT-2? | p.7] Specifically, RT-2-PaLI-X, a specific instantiation of RT-2, combines physical skills learned from robot data with the ability to interpret images and text commands learned from web data. [Source: RT-2_VLA.pdf | Section: 2.  Related Work | p.3] This transfer enables the model to deploy learned skills in new ways, demonstrating emergent capabilities such as re-purposing pick and place skills learned from robot data to place objects near semantically indicated locations [Source: RT-2_VLA.pdf | Section: 2. Can we observe and measure any emergent capabilities of RT-2? | p.7].",
+      "citations": [
+        {
+          "source_filename": "RT-2_VLA.pdf",
+          "paper_title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control",
+          "arxiv_id": "2307.15818",
+          "section_header": "2. Can we observe and measure any emergent capabilities of RT-2?",
+          "page_number": 7,
+          "score": 0.8809
+        }
+      ],
+      "retrieved_chunks": [
+        "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control\n1. How does RT-2 perform on seen tasks and more importantly, generalize over new objects,\nbackgrounds, and environments?\n2. Can we observe and measure any emergent capabilities of RT-2?\n3. How does the generalization vary with parameter count and other design decisions?\n4. Can RT-2 exhibit signs of chain-of-thought reasoning similarly to vision-language models?\nWe evaluate our approach and several baselines with about 6,000 evaluation trajectories in a variety\nof conditions, which we describe in the following sections. Unless specified otherwise, we use a\n7DoF mobile manipulator with the action space described in Sec. 3.2. We also demonstrate examples\nof RT-2 execution on the project website: robotics-transformer2.github.io. We train two\nspecific instantiations of RT-2 that leverage pre-trained VLMs: (1) RT-2-PaLI-X is built from 5B and",
+        "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control\nWe observe that robotic policies derived from such vision-language models exhibit a range of\nremarkable capabilities, combining the physical motions learned from the robot data with the ability\nto interpret images and text learned from web data into a single model. Besides the expected benefit\nof dramatically improving generalization to novel objects and semantically varied instructions, we\nobserve a number of emergent capabilities. While the model’s physical skills are still limited to the\ndistribution of skills seen in the robot data, the model acquires the ability to deploy those skills in\nnew ways by interpreting images and language commands using knowledge gleaned from the web.\nSome example highlights are shown in Figure 2. The model is able to re-purpose pick and place\nskills learned from robot data to place objects near semantically indicated locations, such as specific",
+        "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control\nFigure 5 | Real-world out-of-distribution behaviors in the\nLanguage Table environment. Identical RT-2-PaLI-3B model\ncheckpoint is used as in Tab. 1.\nModel\nLanguage-Table\nBC-Zero (Jang et al., 2021)\n72 ± 3\nRT-1 (Brohan et al., 2022)\n74 ± 13\nLAVA (Lynch et al., 2022)\n77 ± 4\nRT-2-PaLI-3B (ours)\n90 ± 10\nTable 1 | Performance on the simulated\nLanguage-Table tasks (Lynch and Ser-\nmanet, 2020).\nin the robot data by transferring knowledge from the web. We refer to such capabilities as emergent, in\nthe sense that they emerge by transferring Internet-scale pretraining. We do not expect such transfer\nto enable new robotic motions, but we do expect semantic and visual concepts, including relations\nand nouns, to transfer effectively, even in cases where those concepts were not seen in the robot data.\nQualitative Evaluations. First, we experiment with our RT-2-PaLI-X model to determine various",
+        "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control\n(a) Performance comparison on various emergent skill evalu-\nations (Figure 8) between RT-2 and two baselines.\n(b) Ablations of RT-2-PaLI-X showcasing the impact of param-\neter count and training strategy on generalization.\nFigure 6 | Quantitative performance of RT-2 across (6a) emergent skills and (6b) size and training ablations.\nAppendix Tables 5 and 6 detail the full numerical results.\n4.3. How does the generalization vary with parameter count and other design decisions?\nFor this comparison, we use RT-2-PaLI-X model because of its flexibility in terms of the model size\n(due to the nature of PaLM-E, RT-2-PaLM-E is restricted to only certain sizes of PaLM and ViT models).\nIn particular, we compare two different model sizes, 5B and 55B, as well as three different training\nroutines: training a model from scratch, without using any weights from the VLM pre-training;",
+        "Figure 7 | Rollouts of RT-2 with chain-of-thought reasoning, where RT-2 generates both a plan and an action.\n5. Limitations\nEven though RT-2 exhibits promising generalization properties, there are multiple limitations of this\napproach. First, although we show that including web-scale pretraining via VLMs boosts generalization\nover semantic and visual concepts, the robot does not acquire any ability to perform new motions\nby virtue of including this additional experience. The model’s physical skills are still limited to the\ndistribution of skills seen in the robot data (see Appendix G), but it learns to deploy those skills in\nnew ways. We believe this is a result of the dataset not being varied enough along the axes of skills.\nAn exciting direction for future work is to study how new skills could be acquired through new data\ncollection paradigms such as videos of humans.\nSecond, although we showed we could run large VLA models in real time, the computation cost"
+      ],
+      "warnings": [],
+      "status": "ok"
+    },
+    {
+      "question": "What problem does GraphRAG solve that naive RAG cannot handle?",
+      "category": "rag_2024",
+      "ground_truth": "",
+      "answer": "GraphRAG addresses the limitation of naive RAG in handling iterative question answering that characterizes sensemaking activity, offering a highly efficient method despite a modest drop in performance compared to other global methods [Source: GraphRAG.pdf | Section: 2.2 Using Knowledge Graphs with LLMs and RAG | p.3]. Naive RAG may struggle with the iterative nature of sensemaking, where the system needs to continuously refine its understanding based on previous responses, whereas GraphRAG is designed to handle this complexity efficiently. [Source: GraphRAG.pdf | Section: 2 Background | p.2] However, the exact performance metrics and comparisons with naive RAG are not detailed in the provided documents. [Source: GraphRAG.pdf | Section: — | p.10]",
+      "citations": [
+        {
+          "source_filename": "GraphRAG.pdf",
+          "paper_title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+          "arxiv_id": "2404.16130",
+          "section_header": null,
+          "page_number": 10,
+          "score": 0.7335
+        }
+      ],
+      "retrieved_chunks": [
+        "fewer tokens. For a modest drop in performance compared with other global methods, root-level\nGraphRAG offers a highly efficient method for the iterative question answering that characterizes\nsensemaking activity, while retaining advantages in comprehensiveness (72% win rate) and diversity\n(62% win rate) over vector RAG.\n10",
+        "• In this survey, we present a thorough and systematic\nreview of the state-of-the-art RAG methods, delineating\nits evolution through paradigms including naive RAG,\narXiv:2312.10997v5  [cs.CL]  27 Mar 2024",
+        "GraphRAG builds upon prior work on advanced RAG strategies. GraphRAG leverages summaries\nover large sections of the data source as a form of ”self-memory” (described in Cheng et al. 2024),\nwhich are later used to answer queries as in Mao et al. 2020). These summaries are generated in\nparallel and iteratively aggregated into global summaries, similar to prior techniques (Feng et al.,\n2023; Gao et al., 2023; Khattab et al., 2022; Shao et al., 2023; Su et al., 2020; Trivedi et al., 2022;\nWang et al., 2024). In particular, GraphRAG is similar to other approaches that use hierarchical\nindexing to create summaries (similar to Kim et al. 2023; Sarthi et al. 2024). GraphRAG contrasts\nwith these approaches by generating a graph index from the source data, then applying graph-based\ncommunity detection to create a thematic partitioning of the data.\n2.2\nUsing Knowledge Graphs with LLMs and RAG\nApproaches to knowledge graph extraction from natural language text corpora include rule-",
+        "explicit techniques such as rewriting, decomposition, and disambiguation.\n• HyDE (Gao et al., 2022): This method utilizes the LLM to generate a hypothetical document based\non the input query. This generated document is then employed to retrieve relevant text chunks,\nwhich are subsequently used to formulate the final answer.\n• GraphRAG (Edge et al., 2024): This is a graph-enhanced RAG system that utilizes an LLM to\nextract entities and relationships from the text, representing them as nodes and edges. It generates\ncorresponding descriptions for these elements, aggregates nodes into communities, and produces a\ncommunity report to capture global information. When handling high-level queries, GraphRAG\nretrieves more comprehensive information by traversing these communities.\nImplementation and Evaluation Details. In our experiments, we utilize the nano vector database\nfor vector data management and access. For all LLM-based operations in LightRAG, we default",
+        "of the LLM-as-a-judge technique (Zheng et al., 2024) suitable for questions targeting broad issues\nand themes where there is no ground-truth answer. This approach first uses one LLM to generate\na diverse set of global sensemaking questions based on corpus-specific use cases, before using a\nsecond LLM to judge the answers of two different RAG systems using predefined criteria (defined\nin Section 3.3). We use this approach to compare GraphRAG to vector RAG on two representative\nreal-world text datasets. Results show GraphRAG strongly outperforms vector RAG when using\nGPT-4 as the LLM.\nGraphRAG is available as open-source software at https://github.com/microsoft/graphrag. In ad-\ndition, versions of the GraphRAG approach are also available as extensions to multiple open-\nsource libraries, including LangChain (LangChain, 2024), LlamaIndex (LlamaIndex, 2024), Nebu-\nlaGraph (NebulaGraph, 2024), and Neo4J (Neo4J, 2024).\n2\nBackground\n2.1\nRAG Approaches and Systems"
+      ],
+      "warnings": [
+        "GraphRAG.pdf: section_header missing"
+      ],
+      "status": "partial"
+    }
+  ]
+}

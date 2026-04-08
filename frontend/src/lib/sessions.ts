@@ -46,3 +46,11 @@ export function renameSession(id: string, title: string): Session[] {
   writeSessions(updated);
   return updated;
 }
+
+export function clearAllSessions(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    /* ignore */
+  }
+}
