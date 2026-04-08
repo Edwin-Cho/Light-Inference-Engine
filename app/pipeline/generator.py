@@ -349,6 +349,10 @@ def _match_citations_by_title(
     return matched
 
 
+# Flaw 2 fix: 매 generate() 호출마다 PDF 재열기 방지 — 프로세스 수명 동안 제목 캐시 유지
+_paper_title_cache: dict[str, str] = {}
+
+
 def _build_citations(retrieved: List[Tuple[dict, float]]) -> List[Citation]:
     """Build a deduplicated list of Citation objects from retrieved chunks.
 
@@ -381,12 +385,17 @@ def _build_citations(retrieved: List[Tuple[dict, float]]) -> List[Citation]:
                 # 메타데이터에 title이 없으면 PDF를 직접 열어 첫 페이지에서 추출 시도
                 pdf_path = settings.data_raw_dir / filename
                 if pdf_path.suffix.lower() == ".pdf" and pdf_path.exists():
-                    try:
-                        doc = fitz.open(str(pdf_path))
-                        paper_title = _extract_paper_title(filename, doc)
-                        doc.close()
-                    except Exception:
-                        paper_title = stem_fallback
+                    if filename in _paper_title_cache:
+                        paper_title = _paper_title_cache[filename]
+                    else:
+                        try:
+                            # Bug 1 fix: context manager → _extract_paper_title 예외 시도 doc.close() 보장
+                            with fitz.open(str(pdf_path)) as doc:
+                                paper_title = _extract_paper_title(filename, doc)
+                        except Exception:
+                            paper_title = stem_fallback
+                        # Flaw 2 fix: 이후 호출에서 재열기 방지
+                        _paper_title_cache[filename] = paper_title
             citations.append(Citation(
                 source_filename=filename,
                 paper_title=paper_title or stem_fallback,
@@ -403,6 +412,14 @@ def _build_citations(retrieved: List[Tuple[dict, float]]) -> List[Citation]:
 # 문장 경계 분리: '.', '!', '?' 다음 공백 기준
 # lookbehind로 구분자 자체는 유지하면서 분리
 _SENT_SPLIT_RE = re.compile(r'(?<=[.!?])\s+')
+
+# Flaw 1 fix: 학술 약어 마침표 임시 치환 — _inject_citations_post_hoc 오분리 방지
+# "Fig. 3" → "Fig\x01 3" 로 치환해 _SENT_SPLIT_RE가 약어 마침표를 분리하지 않도록 보호
+_ABBREV_RE = re.compile(
+    r'\b(Fig|et al|e\.g|i\.e|Dr|Mr|Mrs|Prof|vs|cf|Eq|No|Vol|Sec)\.',
+    re.IGNORECASE,
+)
+_ABBREV_PLACEHOLDER = '\x01'  # SOH 제어 문자 — 실제 학술 텍스트에 등장 불가
 
 # P13 Tier-2 숫자 탐지 정규식
 # 주의: Python re 모듈은 가변 길이 lookbehind 미지원 → citation 보호는 split으로 처리
@@ -528,8 +545,10 @@ def _inject_citations_post_hoc(
     # None이면 config에서 최적값 로드 (하드코딩 제거 → 재현성 보장)
     if min_overlap is None:
         min_overlap = settings.citation_injection_min_overlap
-    # 문장 단위로 분리 (구분자 `.!?` 유지)
-    sentences = _SENT_SPLIT_RE.split(answer)
+    # Flaw 1 fix: 약어 마침표("Fig.", "et al.", "e.g." 등) 보호 후 분리 → 오분리 방지
+    guarded = _ABBREV_RE.sub(lambda m: m.group(1) + _ABBREV_PLACEHOLDER, answer)
+    sentences_raw = _SENT_SPLIT_RE.split(guarded)
+    sentences = [s.replace(_ABBREV_PLACEHOLDER, '.') for s in sentences_raw]
     result: list[str] = []
 
     for sent in sentences:
@@ -574,7 +593,8 @@ def _inject_citations_post_hoc(
 
     # 원본 문장 구분자(공백 / \n\n 등)를 복원하여 LaTeX 블록 및 단락 구조 보존
     # " ".join() 사용 시 \n\n 단락 구분이 평탄화되어 LaTeX $$ 블록 렌더링이 깨짐
-    seps = _SENT_SPLIT_RE.findall(answer)
+    # guarded 기준으로 구분자 추출 — 약어 오분리 제외 후 실제 문장 경계만 포함
+    seps = _SENT_SPLIT_RE.findall(guarded)
     output: list[str] = []
     for i, sent in enumerate(result):
         output.append(sent)
