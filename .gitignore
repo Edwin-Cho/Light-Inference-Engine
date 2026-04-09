@@ -35,6 +35,12 @@ data/index/
 *.swp
 *.swo
 
+# Windsurf project rules (IDE-local, not for repo)
+.windsurfrules
+
+# Dev log (local only)
+WORKLOG.md
+
 # Logs
 *.log
 uvicorn.log

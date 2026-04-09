@@ -30,7 +30,7 @@ function ScoreBar({ score }: { score: number }) {
 
 function CitationCard({ c }: { c: Citation }) {
   return (
-    <div className="rounded-xl p-3 text-xs space-y-2 bg-slate-900 border border-slate-800">
+    <div className="animate-enter-view rounded-xl p-3 text-xs space-y-2 bg-slate-900 border border-slate-800">
       <div className="flex items-start justify-between gap-2">
         <span className="font-medium text-slate-100 leading-snug">{c.paper_title || c.source_filename}</span>
         {c.arxiv_id && (
@@ -282,7 +282,7 @@ export default function QueryPage() {
               <BookOpen className="w-7 h-7 text-emerald-400" />
             </div>
             <h3 className="text-white font-medium">Ask anything about your papers</h3>
-            <p className="text-slate-500 text-sm mt-1.5 max-w-sm">Queries are answered using only your indexed documents with forced citations.</p>
+            <p className="text-slate-500 text-base mt-1.5 max-w-sm">Queries are answered using only your indexed documents with forced citations.</p>
             <div className="flex flex-wrap gap-2 justify-center mt-6 max-w-md">
               {suggestLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (
@@ -293,7 +293,7 @@ export default function QueryPage() {
                   <button
                     key={q}
                     onClick={() => { setInput(q); textareaRef.current?.focus(); }}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-slate-700/60 text-slate-400 hover:text-slate-200 hover:border-slate-600 hover:bg-slate-800/60 transition text-left"
+                    className="suggest-chip px-3 py-1.5 text-sm rounded-lg border border-slate-700/60 text-slate-400 hover:text-slate-200 hover:border-slate-600 hover:bg-slate-800/60 transition text-left"
                   >
                     {q}
                   </button>
@@ -311,7 +311,7 @@ export default function QueryPage() {
           </div>
         )}
         {messages.map((msg) => (
-          <div key={msg.id}>
+          <div key={msg.id} className="animate-appear">
             {msg.role === 'user' ? (
               <div className="flex justify-end">
                 <div className="bg-slate-700 border border-slate-600/40 rounded-xl px-4 py-2.5 text-white text-[15px] max-w-[70%] whitespace-pre-wrap">

@@ -8,7 +8,8 @@
  * RBAC: 사용자 role에 따라 네비 메뉴 필터링 (researcher < lab_pi < admin)
  * 세션 rename: 더블클릭 또는 ✏️ 아이콘으로 인라인 수정 활성화
  */
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
+import { useTransitionNavigate } from '@/lib/useTransitionNavigate';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserRole } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -88,7 +89,7 @@ function formatRelativeTime(ts: number): string {
 export default function Layout() {
   const { logout, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const { sessions, currentId, startNew, openSession, removeSession, renameSession, clearAllSessions } = useSession();
   // 인라인 이름 수정 상태: editingId가 null이 아니면 해당 세션이 편집 모드
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -194,7 +195,7 @@ export default function Layout() {
           {/* 세션 목록: 스크롤 가능, 각 세션은 클릭으로 열기 / 호버 시 편집·삭제 버튼 표시 */}
           <div className="overflow-y-auto flex-1 space-y-0.5 pb-2">
             {sessions.length === 0 ? (
-              <p className="text-xs text-slate-700 px-2 py-1.5">No sessions yet</p>
+              <p className="text-sm text-slate-500 px-2 py-1.5">No sessions yet</p>
             ) : (
               sessions.map((s) => (
                 <div
@@ -227,13 +228,13 @@ export default function Layout() {
                     ) : (
                       // 표시 모드: 더블클릭으로 편집 활성화
                       <p
-                        className="text-xs truncate leading-tight"
+                        className="text-sm truncate leading-tight"
                         onDoubleClick={(e) => handleSessionDoubleClick(e, s.id, s.title)}
                       >
                         {s.title}
                       </p>
                     )}
-                    <p className="text-[10px] text-slate-700 mt-0.5">{formatRelativeTime(s.createdAt)}</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">{formatRelativeTime(s.createdAt)}</p>
                   </div>
                   <div className="flex items-center gap-0.5 shrink-0 mt-0.5">
                     <button
